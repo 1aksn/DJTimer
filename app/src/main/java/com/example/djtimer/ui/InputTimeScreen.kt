@@ -1,5 +1,6 @@
 package com.example.djtimer.ui
 
+import android.util.Log
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ExperimentalAnimationApi
@@ -51,7 +52,7 @@ import com.example.djtimer.viewModel.DJTimerViewModel
 fun InputTimeScreen(navController: NavController) {
     val viewModel: DJTimerViewModel = hiltViewModel()
 
-    val canGo = viewModel.canStartTimer()
+    val canGo by viewModel.canGo.collectAsState()
 
     val startTime by viewModel.startTime.collectAsState()
     val endTime by viewModel.endTime.collectAsState()
@@ -128,6 +129,7 @@ fun InputTimeScreen(navController: NavController) {
                     ) {
                         Text("Reset")
                     }
+                    Log.v("ろぐ", ""+canGo)
 
                     // Goボタンは状態に応じてフェード＋スライド表示
                     AnimatedVisibility(

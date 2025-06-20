@@ -1,10 +1,14 @@
 package com.example.djtimer.viewModel
 
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.example.djtimer.model.InputMode
 import com.example.djtimer.model.TimerState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.launch
 import java.time.LocalTime
 import javax.inject.Inject
 
@@ -18,6 +22,20 @@ class DJTimerViewModel @Inject constructor() : ViewModel() {
     val endTime = MutableStateFlow<LocalTime?>(null)
     val playTime = MutableStateFlow("")
     val inputMode = MutableStateFlow(InputMode.None)
+
+    private val _canGo = MutableStateFlow(false)
+    val canGo: StateFlow<Boolean> = _canGo
+
+    init {
+        viewModelScope.launch {
+            combine(startTime, endTime, playTime, inputMode) { start, end, play, mode ->
+                (mode == InputMode.PlayTime && play.toIntOrNull() != null)
+                        || (mode == InputMode.StartEnd && start != null && end != null)
+            }.collect {
+                _canGo.value = it
+            }
+        }
+    }
 
     fun updateStartTime(time: LocalTime) {
         startTime.value = time
