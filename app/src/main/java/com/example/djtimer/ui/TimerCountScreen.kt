@@ -1,18 +1,147 @@
 package com.example.djtimer.ui
 
+import android.os.Build
+import android.util.Log
+import androidx.annotation.RequiresApi
+import androidx.compose.animation.core.animateDpAsState
+import androidx.compose.foundation.layout.BoxWithConstraints
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import com.example.djtimer.model.TimerState
 import com.example.djtimer.viewModel.DJTimerViewModel
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.unit.dp
+import com.example.djtimer.model.DisplayModes
+import com.example.djtimer.ui.Mode.rememberDisplayMode
+import androidx.compose.animation.core.tween
+import androidx.compose.foundation.layout.Box
+import androidx.compose.material3.Text
+import androidx.compose.foundation.layout.offset
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.height
+import androidx.compose.material3.Button
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.graphics.Color
+import androidx.navigation.NavBackStackEntry
 
+
+@RequiresApi(Build.VERSION_CODES.S)
 @Composable
-fun TimerCountScreen(navController: NavController) {
-    val viewModel: DJTimerViewModel = hiltViewModel()
+fun TimerCountScreen(navController: NavController, backStackEntry: NavBackStackEntry) {
+
+    val parentEntry = remember(backStackEntry) {
+        navController.getBackStackEntry("input")
+    }
+    val viewModel: DJTimerViewModel = hiltViewModel(parentEntry)
+
+    LaunchedEffect(Unit) {
+        viewModel.resumeTimerIfNeeded()
+    }
     val timerState by viewModel.timerState.collectAsState()
     val timeDisplay by viewModel.timeRemainingText.collectAsState()
+    val displayMode = rememberDisplayMode()
 
-    // タイマー表示・Stop/Playトグル・Reset
-    // 終了時 viewModel から状態を検知 → navController.navigate("done")
+    LaunchedEffect(timerState) {
+        if (timerState == TimerState.Done) {
+            navController.navigate("done") {
+                popUpTo("timer") { inclusive = true }
+            }
+        }
+    }
+
+    BoxWithConstraints(
+        modifier = Modifier.fillMaxSize()
+    ) {
+        val density = LocalDensity.current
+        val parentHeight = with(density) { constraints.maxHeight.toDp() }
+
+        val timerOffsetY by animateDpAsState(
+            targetValue = when (displayMode) {
+                DisplayModes.FLEX -> parentHeight / -4
+                else -> 0.dp
+            },
+            animationSpec = tween(400), label = "timerOffsetY"
+        )
+
+        val buttonOffsetY by animateDpAsState(
+            targetValue = when (displayMode) {
+                DisplayModes.FLEX -> parentHeight / 4
+                else -> 0.dp
+            },
+            animationSpec = tween(400), label = "buttonOffsetY"
+        )
+
+        if (displayMode != DisplayModes.COVER_DISPLAY) {
+            Column(
+                modifier = Modifier.fillMaxSize(),
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Box(modifier = Modifier.offset(y = timerOffsetY)) {
+                    Text(
+                        text = timeDisplay,
+                        style = MaterialTheme.typography.headlineLarge,
+                        color = Color.White
+                    )
+                }
+
+                Spacer(modifier = Modifier.height(32.dp))
+
+                Box(modifier = Modifier.offset(y = buttonOffsetY)) {
+                    Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
+                        StartStopButton(viewModel)
+                        ResetButton(navController, viewModel)
+                    }
+                }
+            }
+        } else {
+            // COVER: タイマーのみ中央に表示
+            Box(
+                modifier = Modifier.fillMaxSize(),
+                contentAlignment = Alignment.Center
+            ) {
+                Text(
+                    text = timeDisplay,
+                    style = MaterialTheme.typography.headlineLarge,
+                    color = Color.White
+                )
+            }
+        }
+    }
+}
+
+@RequiresApi(Build.VERSION_CODES.S)
+@Composable
+fun StartStopButton(viewModel: DJTimerViewModel) {
+    val timerState by viewModel.timerState.collectAsState()
+    val isRunning = timerState == TimerState.InProgress
+
+    Button(onClick = {
+        if (isRunning) viewModel.stopTimer()
+        else viewModel.startTimer()
+    }) {
+        Text(if (isRunning) "Stop" else "Start")
+    }
+}
+
+@RequiresApi(Build.VERSION_CODES.S)
+@Composable
+fun ResetButton(navController: NavController, viewModel: DJTimerViewModel) {
+    Button(onClick = {
+        viewModel.reset()
+        navController.popBackStack("input", inclusive = false)
+    }) {
+        Text("Reset")
+    }
 }

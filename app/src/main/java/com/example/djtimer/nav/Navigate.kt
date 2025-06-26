@@ -1,5 +1,7 @@
 package com.example.djtimer.nav
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
@@ -8,6 +10,7 @@ import com.example.djtimer.ui.DoneScreen
 import com.example.djtimer.ui.InputTimeScreen
 import com.example.djtimer.ui.TimerCountScreen
 
+@RequiresApi(Build.VERSION_CODES.S)
 @Composable
 fun AppNavGraph(navController: NavHostController) {
     NavHost(navController = navController, startDestination = "input") {
@@ -16,8 +19,8 @@ fun AppNavGraph(navController: NavHostController) {
             InputTimeScreen(navController)
         }
 
-        composable("timer") {
-            TimerCountScreen(navController)
+        composable("timer") { backStackEntry ->
+            TimerCountScreen(navController, backStackEntry)
         }
 
         composable("done") {

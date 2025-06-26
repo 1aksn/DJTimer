@@ -1,7 +1,8 @@
 package com.example.djtimer.ui
 
+import android.os.Build
 import android.util.Log
-import androidx.compose.animation.AnimatedContent
+import androidx.annotation.RequiresApi
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.animateContentSize
@@ -12,7 +13,6 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
-import androidx.compose.animation.with
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
@@ -20,7 +20,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
@@ -28,7 +27,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
-import androidx.compose.material3.DisplayMode
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -36,7 +35,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clipToBounds
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
@@ -47,6 +46,7 @@ import com.example.djtimer.model.InputMode
 import com.example.djtimer.ui.Mode.rememberDisplayMode
 import com.example.djtimer.viewModel.DJTimerViewModel
 
+@RequiresApi(Build.VERSION_CODES.S)
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
 fun InputTimeScreen(navController: NavController) {
@@ -59,6 +59,8 @@ fun InputTimeScreen(navController: NavController) {
     val playTime by viewModel.playTime.collectAsState()
     val inputMode by viewModel.inputMode.collectAsState()
     val displayMode = rememberDisplayMode()
+
+    val totalTimeText by viewModel.totalTimeText.collectAsState()
 
     BoxWithConstraints(
         modifier = Modifier
@@ -83,20 +85,32 @@ fun InputTimeScreen(navController: NavController) {
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            // Start & End 時刻ピッカー
-            TimePickerRow(
-                label = "Start",
-                time = startTime,
-                enabled = inputMode != InputMode.PlayTime
-            ) { viewModel.updateStartTime(it) }
 
-            Spacer(modifier = Modifier.height(8.dp))
+            if (totalTimeText.isNotBlank()) {
+                Text(
+                    text = totalTimeText,
+                    style = MaterialTheme.typography.bodyLarge,
+                    modifier = Modifier.padding(bottom = 8.dp),
+                    color = Color.White
+                )
+            }
 
-            TimePickerRow(
-                label = "End",
-                time = endTime,
-                enabled = inputMode != InputMode.PlayTime
-            ) { viewModel.updateEndTime(it) }
+            if (displayMode != DisplayModes.COVER_DISPLAY) {
+                // Start & End 時刻ピッカー
+                TimePickerRow(
+                    label = "Start",
+                    time = startTime,
+                    enabled = inputMode != InputMode.PlayTime
+                ) { viewModel.updateStartTime(it) }
+
+                Spacer(modifier = Modifier.height(8.dp))
+
+                TimePickerRow(
+                    label = "End",
+                    time = endTime,
+                    enabled = inputMode != InputMode.PlayTime
+                ) { viewModel.updateEndTime(it) }
+            }
 
             Spacer(modifier = Modifier.height(16.dp))
 
@@ -107,7 +121,7 @@ fun InputTimeScreen(navController: NavController) {
                 label = { Text("PlayTime（分）") },
                 enabled = inputMode != InputMode.StartEnd,
                 keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number),
-                modifier = Modifier.width(200.dp)
+                modifier = Modifier.width(250.dp),
             )
 
             Spacer(modifier = Modifier.height(24.dp))
@@ -143,7 +157,10 @@ fun InputTimeScreen(navController: NavController) {
                         exit = fadeOut() + slideOutHorizontally(targetOffsetX = { +30 })
                     ) {
                         Button(
-                            onClick = { navController.navigate("timer") }
+                            onClick = {
+                                viewModel.startTimer()
+                                navController.navigate("timer")
+                            }
                         ) {
                             Text("Go")
                         }
