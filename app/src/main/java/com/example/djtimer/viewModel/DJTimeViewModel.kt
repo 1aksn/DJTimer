@@ -46,6 +46,17 @@ class DJTimerViewModel @Inject constructor() : ViewModel() {
     private val _canGo = MutableStateFlow(false)
     val canGo: StateFlow<Boolean> = _canGo
 
+    private var _initialDurationSeconds: Int? = null
+
+    val remainingDurationSeconds: Int
+        get() = endTimeReference?.let {
+            val now = LocalDateTime.now()
+            Duration.between(now, it).seconds.toInt().coerceAtLeast(0)
+        } ?: 0
+
+    val totalDurationSeconds: Int?
+        get() = _initialDurationSeconds
+
     init {
         viewModelScope.launch {
             combine(startTime, endTime, playTime, inputMode) { start, end, play, mode ->
@@ -111,6 +122,7 @@ class DJTimerViewModel @Inject constructor() : ViewModel() {
         inputMode.value = InputMode.None
         endTimeReference = null
         totalTimeText.value = ""
+        _initialDurationSeconds = null
     }
 
     fun canStartTimer(): Boolean {
@@ -155,6 +167,7 @@ class DJTimerViewModel @Inject constructor() : ViewModel() {
         }
 
         endTimeReference = now.plus(duration)
+        _initialDurationSeconds = duration.seconds.toInt()
         _timerState.value = TimerState.InProgress
 
         countdownJob = viewModelScope.launch {

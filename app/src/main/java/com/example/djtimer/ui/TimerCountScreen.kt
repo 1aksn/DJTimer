@@ -3,7 +3,9 @@ package com.example.djtimer.ui
 import android.os.Build
 import android.util.Log
 import androidx.annotation.RequiresApi
+import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.animateDpAsState
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
@@ -20,6 +22,7 @@ import androidx.compose.ui.unit.dp
 import com.example.djtimer.model.DisplayModes
 import com.example.djtimer.ui.Mode.rememberDisplayMode
 import androidx.compose.animation.core.tween
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.material3.Text
 import androidx.compose.foundation.layout.offset
@@ -27,12 +30,14 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.lerp
 import androidx.navigation.NavBackStackEntry
 
 
@@ -52,6 +57,23 @@ fun TimerCountScreen(navController: NavController, backStackEntry: NavBackStackE
     val timeDisplay by viewModel.timeRemainingText.collectAsState()
     val displayMode = rememberDisplayMode()
 
+    val remainingRatio = remember(timeDisplay) {
+        // 残り時間（秒）を割合に変換（適宜調整）
+
+        val totalSeconds = viewModel.totalDurationSeconds?.toFloat() ?: 1f
+        val remainingSeconds = viewModel.remainingDurationSeconds.toFloat() ?: 0f
+        Log.v("ろぐ", "total = $totalSeconds, reaming = $remainingSeconds")
+        (remainingSeconds / totalSeconds).coerceIn(0f, 1f)
+    }
+    Log.v("ろぐ", "total = $remainingRatio")
+
+    val animatedHeightFraction by animateFloatAsState(
+        targetValue = 1f - remainingRatio, // 0f → ピンク無し、1f → 全面ピンク
+        animationSpec = tween(500), label = "heightFraction"
+    )
+
+    Log.v("ろぐ", "height = $animatedHeightFraction")
+
     LaunchedEffect(timerState) {
         if (timerState == TimerState.Done) {
             navController.navigate("done") {
@@ -62,7 +84,24 @@ fun TimerCountScreen(navController: NavController, backStackEntry: NavBackStackE
 
     BoxWithConstraints(
         modifier = Modifier.fillMaxSize()
+
     ) {
+        val boxHeight = constraints.maxHeight.toFloat()
+
+        Box(modifier = Modifier
+            .fillMaxSize()
+            .background(Color.Blue)) // 背景 青
+
+        val pinkHeightPx = boxHeight * animatedHeightFraction
+        val pinkHeightDp = with(LocalDensity.current) { pinkHeightPx.toDp() }
+
+        Box(modifier = Modifier
+            .fillMaxWidth()
+            .height(pinkHeightDp)
+            .align(Alignment.BottomStart)
+            .background(Color(0xFFFF1493)) // ピンク
+        )
+
         val density = LocalDensity.current
         val parentHeight = with(density) { constraints.maxHeight.toDp() }
 
