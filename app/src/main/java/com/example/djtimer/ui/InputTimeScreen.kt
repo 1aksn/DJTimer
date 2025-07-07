@@ -40,6 +40,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.djtimer.model.DisplayModes
@@ -86,7 +87,8 @@ fun InputTimeScreen(navController: NavController) {
                 Text(
                     text = totalTimeText,
                     style = MaterialTheme.typography.bodyLarge,
-                    color = Color.White
+                    color = Color.White,
+                    fontSize = 80.sp
                 )
             }
 
