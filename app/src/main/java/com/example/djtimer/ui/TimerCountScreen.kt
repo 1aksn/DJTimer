@@ -38,6 +38,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.lerp
+import androidx.compose.ui.unit.sp
 import androidx.navigation.NavBackStackEntry
 
 
@@ -128,7 +129,8 @@ fun TimerCountScreen(navController: NavController, backStackEntry: NavBackStackE
                     Text(
                         text = timeDisplay,
                         style = MaterialTheme.typography.headlineLarge,
-                        color = Color.White
+                        color = Color.White,
+                        fontSize = 100.sp
                     )
                 }
 
@@ -150,7 +152,8 @@ fun TimerCountScreen(navController: NavController, backStackEntry: NavBackStackE
                 Text(
                     text = timeDisplay,
                     style = MaterialTheme.typography.headlineLarge,
-                    color = Color.White
+                    color = Color.White,
+                    fontSize = 150.sp
                 )
             }
         }
