@@ -65,14 +65,11 @@ fun TimerCountScreen(navController: NavController, backStackEntry: NavBackStackE
         Log.v("ろぐ", "total = $totalSeconds, reaming = $remainingSeconds")
         (remainingSeconds / totalSeconds).coerceIn(0f, 1f)
     }
-    Log.v("ろぐ", "total = $remainingRatio")
 
     val animatedHeightFraction by animateFloatAsState(
         targetValue = 1f - remainingRatio, // 0f → ピンク無し、1f → 全面ピンク
         animationSpec = tween(500), label = "heightFraction"
     )
-
-    Log.v("ろぐ", "height = $animatedHeightFraction")
 
     LaunchedEffect(timerState) {
         if (timerState == TimerState.Done) {

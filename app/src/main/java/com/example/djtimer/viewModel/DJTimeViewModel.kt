@@ -131,6 +131,7 @@ class DJTimerViewModel @Inject constructor() : ViewModel() {
     }
 
     fun startTimer() {
+        if (_timerState.value == TimerState.InProgress) return
         countdownJob?.cancel()
         val now = LocalDateTime.now()
 
@@ -138,6 +139,7 @@ class DJTimerViewModel @Inject constructor() : ViewModel() {
             pausedRemainingDuration != null -> {
                 pausedRemainingDuration.also { pausedRemainingDuration = null } ?: return
             }
+
             inputMode.value == InputMode.PlayTime -> {
                 val minutes = playTime.value.toLongOrNull() ?: return
                 Duration.ofMinutes(minutes)
@@ -167,9 +169,11 @@ class DJTimerViewModel @Inject constructor() : ViewModel() {
         }
 
         endTimeReference = now.plus(duration)
-        _initialDurationSeconds = duration.seconds.toInt()
+        if (_initialDurationSeconds == null) {
+            _initialDurationSeconds = duration.seconds.toInt()
+        }
         _timerState.value = TimerState.InProgress
-
+        countdownJob?.cancel()
         countdownJob = viewModelScope.launch {
             updateTimeLoop(duration)
         }
