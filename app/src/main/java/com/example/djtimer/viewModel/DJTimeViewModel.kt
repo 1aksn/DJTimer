@@ -110,6 +110,7 @@ class DJTimerViewModel @Inject constructor() : ViewModel() {
         playTime.value = ""
         inputMode.value = InputMode.None
         endTimeReference = null
+        totalTimeText.value = ""
     }
 
     fun canStartTimer(): Boolean {

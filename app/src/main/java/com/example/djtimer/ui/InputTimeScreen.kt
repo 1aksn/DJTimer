@@ -69,14 +69,24 @@ fun InputTimeScreen(navController: NavController) {
         val density = LocalDensity.current
         val parentHeight =  with(density) { constraints.maxHeight.toDp() }
 
-        // FLEXのときは画面の高さの1/4だけ下にずらす（上→中央 → 下中央）
-        val targetOffsetY = if (displayMode == DisplayModes.FLEX) parentHeight / 4 else 0.dp
 
         val offsetY by animateDpAsState(
-            targetValue = targetOffsetY,
+            targetValue = if (displayMode == DisplayModes.FLEX) parentHeight / 4 else 0.dp,
             animationSpec = tween(durationMillis = 400),
             label = "offsetY"
         )
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(top = parentHeight / 4), // 上半分の中央に
+                contentAlignment = Alignment.TopCenter
+            ) {
+                Text(
+                    text = totalTimeText,
+                    style = MaterialTheme.typography.bodyLarge,
+                    color = Color.White
+                )
+            }
 
         Column(
             modifier = Modifier
@@ -86,16 +96,8 @@ fun InputTimeScreen(navController: NavController) {
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
 
-            if (totalTimeText.isNotBlank()) {
-                Text(
-                    text = totalTimeText,
-                    style = MaterialTheme.typography.bodyLarge,
-                    modifier = Modifier.padding(bottom = 8.dp),
-                    color = Color.White
-                )
-            }
-
             if (displayMode != DisplayModes.COVER_DISPLAY) {
+
                 // Start & End 時刻ピッカー
                 TimePickerRow(
                     label = "Start",
