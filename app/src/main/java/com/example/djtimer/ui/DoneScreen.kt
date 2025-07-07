@@ -24,7 +24,11 @@ fun DoneScreen(navController: NavController) {
             Text("DONE", fontSize = 150.sp,
                 style = MaterialTheme.typography.headlineLarge,
                 color = Color.White)
-            Button(onClick = { navController.navigate("input") }) {
+            Button(onClick = {
+                navController.navigate("input") {
+                    popUpTo(0) { inclusive = true }
+                }
+            }) {
                 Text("Reset")
             }
         }

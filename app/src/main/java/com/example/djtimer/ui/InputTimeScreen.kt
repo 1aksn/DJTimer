@@ -26,8 +26,10 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
@@ -38,6 +40,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -47,9 +51,11 @@ import com.example.djtimer.model.DisplayModes
 import com.example.djtimer.model.InputMode
 import com.example.djtimer.ui.Mode.rememberDisplayMode
 import com.example.djtimer.viewModel.DJTimerViewModel
+import androidx.compose.material3.TextFieldDefaults
+import androidx.compose.ui.text.TextStyle
 
 @RequiresApi(Build.VERSION_CODES.S)
-@OptIn(ExperimentalAnimationApi::class)
+@OptIn(ExperimentalAnimationApi::class, ExperimentalMaterial3Api::class)
 @Composable
 fun InputTimeScreen(navController: NavController) {
     val viewModel: DJTimerViewModel = hiltViewModel()
@@ -88,7 +94,7 @@ fun InputTimeScreen(navController: NavController) {
                     text = totalTimeText,
                     style = MaterialTheme.typography.bodyLarge,
                     color = Color.White,
-                    fontSize = 80.sp
+                    fontSize = 50.sp
                 )
             }
 
@@ -119,6 +125,7 @@ fun InputTimeScreen(navController: NavController) {
             }
 
             Spacer(modifier = Modifier.height(16.dp))
+            val keyboardController = LocalSoftwareKeyboardController.current
 
             // PlayTime 入力（分）
             OutlinedTextField(
@@ -126,8 +133,23 @@ fun InputTimeScreen(navController: NavController) {
                 onValueChange = { viewModel.updatePlayTime(it) },
                 label = { Text("PlayTime（分）") },
                 enabled = inputMode != InputMode.StartEnd,
-                keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number),
+                keyboardOptions = KeyboardOptions.Default.copy(
+                    keyboardType = KeyboardType.Number,
+                    imeAction = ImeAction.Done  // ← Doneにする
+                ),
+                keyboardActions = KeyboardActions(
+                    onDone = { keyboardController?.hide() }  // ← キーボードを閉じる
+                ),
                 modifier = Modifier.width(250.dp),
+                colors = TextFieldDefaults.outlinedTextFieldColors(
+                    focusedLabelColor = Color(0xFFFF1493),
+                    unfocusedLabelColor = Color(0xFFFF1493),
+                    focusedTextColor = Color.White,
+                    unfocusedTextColor = Color.White,
+                    focusedBorderColor = Color(0xFFFF1493),
+                    unfocusedBorderColor = Color(0xFFFF1493),// ← 入力文字の色を指定
+                ),
+                textStyle = TextStyle(fontSize = 20.sp),
             )
 
             Spacer(modifier = Modifier.height(24.dp))

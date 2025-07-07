@@ -2,6 +2,7 @@ package com.example.djtimer.ui
 
 import android.os.Build
 import android.util.Log
+import androidx.activity.compose.BackHandler
 import androidx.annotation.RequiresApi
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.animateDpAsState
@@ -45,6 +46,11 @@ import androidx.navigation.NavBackStackEntry
 @RequiresApi(Build.VERSION_CODES.S)
 @Composable
 fun TimerCountScreen(navController: NavController, backStackEntry: NavBackStackEntry) {
+
+    // バックボタン無効化
+    BackHandler(enabled = true) {
+        // 何もしない → 戻れなくする
+    }
 
     val parentEntry = remember(backStackEntry) {
         navController.getBackStackEntry("input")
@@ -179,7 +185,9 @@ fun StartStopButton(viewModel: DJTimerViewModel) {
 fun ResetButton(navController: NavController, viewModel: DJTimerViewModel) {
     Button(onClick = {
         viewModel.reset()
-        navController.popBackStack("input", inclusive = false)
+        navController.navigate("input") {
+            popUpTo(0) { inclusive = true }
+        }
     }) {
         Text("Reset")
     }
