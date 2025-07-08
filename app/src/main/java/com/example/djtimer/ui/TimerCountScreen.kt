@@ -110,7 +110,7 @@ fun TimerCountScreen(navController: NavController, backStackEntry: NavBackStackE
                 .fillMaxWidth()
                 .height(pinkHeightDp)
                 .align(Alignment.BottomStart)
-                .background(Color.Yellow) // ピンク
+                .background(Color(0xFFFF1493)) // ピンク
         )
 
         val density = LocalDensity.current
@@ -190,7 +190,7 @@ fun StartStopButton(viewModel: DJTimerViewModel) {
             else viewModel.startTimer()
         },
         colors = ButtonDefaults.buttonColors(
-            containerColor = Color(0xFFFF1493),  // 背景色
+            containerColor = Color(0xFFFFD700),  // 背景色
             contentColor = Color.Blue       // 文字色
         ),
         shape = RoundedCornerShape(0.dp),
@@ -212,7 +212,7 @@ fun ResetButton(navController: NavController, viewModel: DJTimerViewModel) {
             }
         },
         colors = ButtonDefaults.buttonColors(
-            containerColor = Color(0xFFFF1493),  // 背景色
+            containerColor = Color(0xFFFFD700),  // 背景色
             contentColor = Color.Blue       // 文字色
         ),
         shape = RoundedCornerShape(0.dp),

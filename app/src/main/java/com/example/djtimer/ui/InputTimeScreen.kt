@@ -155,12 +155,12 @@ fun InputTimeScreen(navController: NavController) {
                     .width(300.dp)   // 横幅を広げる
                     .height(60.dp)  ,
                 colors = TextFieldDefaults.outlinedTextFieldColors(
-                    focusedLabelColor = Color(0xFFFF1493),
-                    unfocusedLabelColor = Color(0xFFFF1493),
+                    focusedLabelColor = Color(0xFFFFD700),
+                    unfocusedLabelColor = Color(0xFFFFD700),
                     focusedTextColor = Color.White,
                     unfocusedTextColor = Color.White,
-                    focusedBorderColor = Color(0xFFFF1493),
-                    unfocusedBorderColor = Color(0xFFFF1493),// ← 入力文字の色を指定
+                    focusedBorderColor = Color(0xFFFFD700),
+                    unfocusedBorderColor = Color(0xFFFFD700),// ← 入力文字の色を指定
                 ),
                 textStyle = TextStyle(fontSize = 20.sp),
             )
@@ -183,7 +183,7 @@ fun InputTimeScreen(navController: NavController) {
                     Button(
                         onClick = { viewModel.reset() },
                         colors = ButtonDefaults.buttonColors(
-                            containerColor = Color(0xFFFF1493),  // 背景色
+                            containerColor = Color(0xFFFFD700),  // 背景色
                             contentColor = Color.Blue       // 文字色
                         ),
                         shape = RoundedCornerShape(0.dp),
@@ -211,7 +211,7 @@ fun InputTimeScreen(navController: NavController) {
                                 }
                             },
                             colors = ButtonDefaults.buttonColors(
-                                containerColor = Color(0xFFFF1493),  // 背景色
+                                containerColor = Color(0xFFFFD700),  // 背景色
                                 contentColor = Color.Blue       // 文字色
                             ),
                             shape = RoundedCornerShape(0.dp),

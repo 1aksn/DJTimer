@@ -51,13 +51,13 @@ fun TimePickerRow(
     Column( horizontalAlignment = Alignment.Start,) {
         Text(
             text = label,
-            color = Color(0xFFFF1493))
+            color = Color(0xFFFFD700))
         Spacer(modifier = Modifier.height(8.dp))
         Button(
             onClick = { showDialog = true },
             enabled = enabled,
             colors = ButtonDefaults.buttonColors(
-                containerColor = Color(0xFFFF1493),  // 背景色
+                containerColor = Color(0xFFFFD700),  // 背景色
                 contentColor = Color.Blue       // 文字色
             ),
             shape = RoundedCornerShape(0.dp),  // 四角
