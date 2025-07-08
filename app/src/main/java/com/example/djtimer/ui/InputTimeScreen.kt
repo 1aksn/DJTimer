@@ -207,17 +207,9 @@ fun InputTimeScreen(navController: NavController) {
                         Button(
                             onClick = {
                                 val value = playTime.toIntOrNull()
-                                if (value == null) {
-                                    setDialogMessage("数字だけにしてね")
-                                    setShowDialog(true)
-                                } else if (value !in 1..499) {
-                                    setDialogMessage("1~499の間にしてね")
-                                    setShowDialog(true)
-                                } else {
+
                                     viewModel.startTimer()
                                     navController.navigate("timer") {
-                                        popUpTo("input") { inclusive = true }
-                                    }
                                 }
                             },
                             colors = ButtonDefaults.buttonColors(

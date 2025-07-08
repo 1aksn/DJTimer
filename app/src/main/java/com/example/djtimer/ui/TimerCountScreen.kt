@@ -187,7 +187,7 @@ fun ResetButton(navController: NavController, viewModel: DJTimerViewModel) {
     Button(onClick = {
         viewModel.reset()
         navController.navigate("input") {
-            popUpTo(0) { inclusive = true }
+            popUpTo("timer") { inclusive = true }  // timerを消してinputに戻る
         }
     }) {
         Text("Reset")
