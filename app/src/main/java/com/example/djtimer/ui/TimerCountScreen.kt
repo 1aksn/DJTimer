@@ -44,6 +44,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.lerp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavBackStackEntry
+import com.example.djtimer.HideSystemBars
 
 
 @RequiresApi(Build.VERSION_CODES.S)
@@ -181,6 +182,7 @@ fun TimerCountScreen(navController: NavController, backStackEntry: NavBackStackE
 @RequiresApi(Build.VERSION_CODES.S)
 @Composable
 fun StartStopButton(viewModel: DJTimerViewModel) {
+    HideSystemBars()
     val timerState by viewModel.timerState.collectAsState()
     val isRunning = timerState == TimerState.InProgress
 

@@ -17,9 +17,11 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.example.djtimer.HideSystemBars
 
 @Composable
 fun DoneScreen(navController: NavController) {
+    HideSystemBars()
     Box(modifier = Modifier
         .fillMaxSize()
         .background(Color(0xFFFF1493))

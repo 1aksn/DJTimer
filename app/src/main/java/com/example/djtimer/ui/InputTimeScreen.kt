@@ -57,11 +57,13 @@ import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.text.TextStyle
+import com.example.djtimer.HideSystemBars
 
 @RequiresApi(Build.VERSION_CODES.S)
 @OptIn(ExperimentalAnimationApi::class, ExperimentalMaterial3Api::class)
 @Composable
 fun InputTimeScreen(navController: NavController) {
+    HideSystemBars()
     val viewModel: DJTimerViewModel = hiltViewModel()
 
     val canGo by viewModel.canGo.collectAsState()
