@@ -52,6 +52,8 @@ import com.example.djtimer.model.InputMode
 import com.example.djtimer.ui.Mode.rememberDisplayMode
 import com.example.djtimer.viewModel.DJTimerViewModel
 import androidx.compose.material3.TextFieldDefaults
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.text.TextStyle
 
 @RequiresApi(Build.VERSION_CODES.S)
@@ -67,6 +69,9 @@ fun InputTimeScreen(navController: NavController) {
     val playTime by viewModel.playTime.collectAsState()
     val inputMode by viewModel.inputMode.collectAsState()
     val displayMode = rememberDisplayMode()
+
+    val (showDialog, setShowDialog) = remember { mutableStateOf(false) }
+    val (dialogMessage, setDialogMessage) = remember { mutableStateOf("") }
 
     val totalTimeText by viewModel.totalTimeText.collectAsState()
 
@@ -186,8 +191,19 @@ fun InputTimeScreen(navController: NavController) {
                     ) {
                         Button(
                             onClick = {
-                                viewModel.startTimer()
-                                navController.navigate("timer")
+                                val value = playTime.toIntOrNull()
+                                if (value == null) {
+                                    setDialogMessage("数字だけにしてね")
+                                    setShowDialog(true)
+                                } else if (value !in 1..499) {
+                                    setDialogMessage("1~499の間にしてね")
+                                    setShowDialog(true)
+                                } else {
+                                    viewModel.startTimer()
+                                    navController.navigate("timer") {
+                                        popUpTo("input") { inclusive = true }
+                                    }
+                                }
                             }
                         ) {
                             Text("Go")
