@@ -26,9 +26,11 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
@@ -111,11 +113,15 @@ fun InputTimeScreen(navController: NavController) {
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
 
+
             if (displayMode != DisplayModes.COVER_DISPLAY) {
+
+                Spacer(modifier = Modifier.height(32.dp))
+
 
                 // Start & End 時刻ピッカー
                 TimePickerRow(
-                    label = "Start",
+                    label = "Start Time",
                     time = startTime,
                     enabled = inputMode != InputMode.PlayTime
                 ) { viewModel.updateStartTime(it) }
@@ -123,13 +129,13 @@ fun InputTimeScreen(navController: NavController) {
                 Spacer(modifier = Modifier.height(8.dp))
 
                 TimePickerRow(
-                    label = "End",
+                    label = "End Time",
                     time = endTime,
                     enabled = inputMode != InputMode.PlayTime
                 ) { viewModel.updateEndTime(it) }
             }
 
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(32.dp))
             val keyboardController = LocalSoftwareKeyboardController.current
 
             // PlayTime 入力（分）
@@ -145,7 +151,9 @@ fun InputTimeScreen(navController: NavController) {
                 keyboardActions = KeyboardActions(
                     onDone = { keyboardController?.hide() }  // ← キーボードを閉じる
                 ),
-                modifier = Modifier.width(250.dp),
+                modifier = Modifier
+                    .width(300.dp)   // 横幅を広げる
+                    .height(60.dp)  ,
                 colors = TextFieldDefaults.outlinedTextFieldColors(
                     focusedLabelColor = Color(0xFFFF1493),
                     unfocusedLabelColor = Color(0xFFFF1493),
@@ -164,6 +172,7 @@ fun InputTimeScreen(navController: NavController) {
                     .animateContentSize() // ← アニメーションで自然に中央寄せが変化
                     .wrapContentSize(Alignment.Center)
                     .padding(horizontal = 60.dp)
+                    .width(300.dp)
             ) {
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
@@ -172,7 +181,13 @@ fun InputTimeScreen(navController: NavController) {
                 ) {
                     // Resetボタンは常に表示
                     Button(
-                        onClick = { viewModel.reset() }
+                        onClick = { viewModel.reset() },
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = Color(0xFFFF1493),  // 背景色
+                            contentColor = Color.Blue       // 文字色
+                        ),
+                        shape = RoundedCornerShape(0.dp),
+                        modifier = Modifier.weight(1f)
                     ) {
                         Text("Reset")
                     }
@@ -204,7 +219,13 @@ fun InputTimeScreen(navController: NavController) {
                                         popUpTo("input") { inclusive = true }
                                     }
                                 }
-                            }
+                            },
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = Color(0xFFFF1493),  // 背景色
+                                contentColor = Color.Blue       // 文字色
+                            ),
+                            shape = RoundedCornerShape(0.dp),
+                            modifier = Modifier.weight(1f)
                         ) {
                             Text("Go")
                         }

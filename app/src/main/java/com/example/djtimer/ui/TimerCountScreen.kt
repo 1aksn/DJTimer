@@ -64,6 +64,7 @@ fun TimerCountScreen(navController: NavController, backStackEntry: NavBackStackE
     val timeDisplay by viewModel.timeRemainingText.collectAsState()
     val displayMode = rememberDisplayMode()
 
+
     val remainingRatio = remember(timeDisplay) {
         // 残り時間（秒）を割合に変換（適宜調整）
 
