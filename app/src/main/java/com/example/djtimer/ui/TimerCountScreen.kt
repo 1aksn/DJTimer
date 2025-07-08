@@ -137,7 +137,7 @@ fun TimerCountScreen(navController: NavController, backStackEntry: NavBackStackE
                         text = timeDisplay,
                         style = MaterialTheme.typography.headlineLarge,
                         color = Color.White,
-                        fontSize = 100.sp
+                        fontSize = 90.sp
                     )
                 }
 
@@ -160,7 +160,7 @@ fun TimerCountScreen(navController: NavController, backStackEntry: NavBackStackE
                     text = timeDisplay,
                     style = MaterialTheme.typography.headlineLarge,
                     color = Color.White,
-                    fontSize = 150.sp
+                    fontSize = 120.sp
                 )
             }
         }

@@ -21,7 +21,7 @@ fun DoneScreen(navController: NavController) {
         .background(Color(0xFFFF1493))
        ,contentAlignment = Alignment.Center) {
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
-            Text("DONE", fontSize = 150.sp,
+            Text("DONE", fontSize = 120.sp,
                 style = MaterialTheme.typography.headlineLarge,
                 color = Color.White)
             Button(onClick = {
