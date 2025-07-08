@@ -14,10 +14,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.djtimer.HideSystemBars
+import com.example.djtimer.R
 
 @Composable
 fun DoneScreen(navController: NavController) {
@@ -27,7 +29,8 @@ fun DoneScreen(navController: NavController) {
         .background(Color(0xFFFF1493))
        ,contentAlignment = Alignment.Center) {
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
-            Text("DONE", fontSize = 120.sp,
+            Text(
+                stringResource(id = R.string.done), fontSize = 120.sp,
                 style = MaterialTheme.typography.headlineLarge,
                 color = Color.White)
             Button(onClick = {

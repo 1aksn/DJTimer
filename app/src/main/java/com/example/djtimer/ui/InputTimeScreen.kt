@@ -56,8 +56,10 @@ import com.example.djtimer.viewModel.DJTimerViewModel
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import com.example.djtimer.HideSystemBars
+import com.example.djtimer.R
 
 @RequiresApi(Build.VERSION_CODES.S)
 @OptIn(ExperimentalAnimationApi::class, ExperimentalMaterial3Api::class)
@@ -123,7 +125,7 @@ fun InputTimeScreen(navController: NavController) {
 
                 // Start & End 時刻ピッカー
                 TimePickerRow(
-                    label = "Start Time",
+                    label = stringResource(id = R.string.start_time),
                     time = startTime,
                     enabled = inputMode != InputMode.PlayTime
                 ) { viewModel.updateStartTime(it) }
@@ -131,7 +133,7 @@ fun InputTimeScreen(navController: NavController) {
                 Spacer(modifier = Modifier.height(8.dp))
 
                 TimePickerRow(
-                    label = "End Time",
+                    label = stringResource(id = R.string.end_time),
                     time = endTime,
                     enabled = inputMode != InputMode.PlayTime
                 ) { viewModel.updateEndTime(it) }
@@ -144,7 +146,7 @@ fun InputTimeScreen(navController: NavController) {
             OutlinedTextField(
                 value = playTime,
                 onValueChange = { viewModel.updatePlayTime(it) },
-                label = { Text("PlayTime（分）") },
+                label = { Text(stringResource(id = R.string.input_hint)) },
                 enabled = inputMode != InputMode.StartEnd,
                 keyboardOptions = KeyboardOptions.Default.copy(
                     keyboardType = KeyboardType.Number,
@@ -191,7 +193,7 @@ fun InputTimeScreen(navController: NavController) {
                         shape = RoundedCornerShape(0.dp),
                         modifier = Modifier.weight(1f)
                     ) {
-                        Text("Reset")
+                        Text(stringResource(id = R.string.reset))
                     }
                     Log.v("ろぐ", ""+canGo)
 
@@ -219,7 +221,7 @@ fun InputTimeScreen(navController: NavController) {
                             shape = RoundedCornerShape(0.dp),
                             modifier = Modifier.weight(1f)
                         ) {
-                            Text("Go")
+                            Text(stringResource(id = R.string.go))
                         }
                     }
                 }
