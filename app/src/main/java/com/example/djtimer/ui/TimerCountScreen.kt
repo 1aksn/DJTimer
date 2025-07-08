@@ -33,7 +33,10 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -93,18 +96,21 @@ fun TimerCountScreen(navController: NavController, backStackEntry: NavBackStackE
     ) {
         val boxHeight = constraints.maxHeight.toFloat()
 
-        Box(modifier = Modifier
-            .fillMaxSize()
-            .background(Color.Blue)) // 背景 青
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(Color.Blue)
+        ) // 背景 青
 
         val pinkHeightPx = boxHeight * animatedHeightFraction
         val pinkHeightDp = with(LocalDensity.current) { pinkHeightPx.toDp() }
 
-        Box(modifier = Modifier
-            .fillMaxWidth()
-            .height(pinkHeightDp)
-            .align(Alignment.BottomStart)
-            .background(Color(0xFFFF1493)) // ピンク
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(pinkHeightDp)
+                .align(Alignment.BottomStart)
+                .background(Color.Yellow) // ピンク
         )
 
         val density = LocalDensity.current
@@ -144,8 +150,13 @@ fun TimerCountScreen(navController: NavController, backStackEntry: NavBackStackE
                 Spacer(modifier = Modifier.height(32.dp))
 
                 Box(modifier = Modifier.offset(y = buttonOffsetY)) {
-                    Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
+                    Column (
+                        verticalArrangement = Arrangement.Center,
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        modifier = Modifier.align(Alignment.Center)
+                    ) {
                         StartStopButton(viewModel)
+                        Spacer(modifier = Modifier.height(8.dp))
                         ResetButton(navController, viewModel)
                     }
                 }
@@ -160,7 +171,7 @@ fun TimerCountScreen(navController: NavController, backStackEntry: NavBackStackE
                     text = timeDisplay,
                     style = MaterialTheme.typography.headlineLarge,
                     color = Color.White,
-                    fontSize = 120.sp
+                    fontSize = 110.sp
                 )
             }
         }
@@ -173,23 +184,42 @@ fun StartStopButton(viewModel: DJTimerViewModel) {
     val timerState by viewModel.timerState.collectAsState()
     val isRunning = timerState == TimerState.InProgress
 
-    Button(onClick = {
-        if (isRunning) viewModel.stopTimer()
-        else viewModel.startTimer()
-    }) {
-        Text(if (isRunning) "Stop" else "Start")
+    Button(
+        onClick = {
+            if (isRunning) viewModel.stopTimer()
+            else viewModel.startTimer()
+        },
+        colors = ButtonDefaults.buttonColors(
+            containerColor = Color(0xFFFF1493),  // 背景色
+            contentColor = Color.Blue       // 文字色
+        ),
+        shape = RoundedCornerShape(0.dp),
+        modifier = Modifier.width(300.dp).height(90.dp)
+    ) {
+        Text(if (isRunning) "Stop" else "Start" ,
+            fontSize = 50.sp)
     }
 }
 
 @RequiresApi(Build.VERSION_CODES.S)
 @Composable
 fun ResetButton(navController: NavController, viewModel: DJTimerViewModel) {
-    Button(onClick = {
-        viewModel.reset()
-        navController.navigate("input") {
-            popUpTo("timer") { inclusive = true }  // timerを消してinputに戻る
-        }
-    }) {
-        Text("Reset")
+    Button(
+        onClick = {
+            viewModel.reset()
+            navController.navigate("input") {
+                popUpTo("timer") { inclusive = true }  // timerを消してinputに戻る
+            }
+        },
+        colors = ButtonDefaults.buttonColors(
+            containerColor = Color(0xFFFF1493),  // 背景色
+            contentColor = Color.Blue       // 文字色
+        ),
+        shape = RoundedCornerShape(0.dp),
+        modifier = Modifier.width(300.dp)
+
+    ) {
+        Text("Reset",
+            fontSize = 20.sp)
     }
 }

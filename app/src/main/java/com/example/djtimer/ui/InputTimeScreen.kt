@@ -206,9 +206,7 @@ fun InputTimeScreen(navController: NavController) {
                     ) {
                         Button(
                             onClick = {
-                                val value = playTime.toIntOrNull()
-
-                                    viewModel.startTimer()
+                                viewModel.startTimer()
                                     navController.navigate("timer") {
                                 }
                             },
