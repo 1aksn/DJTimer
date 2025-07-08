@@ -214,8 +214,9 @@ class DJTimerViewModel @Inject constructor() : ViewModel() {
     }
 
     private fun formatDuration(duration: Duration): String {
+        val hours = duration.toHours()
         val minutes = duration.toMinutesPart()
         val seconds = duration.toSecondsPart()
-        return String.format("%02d:%02d", minutes, seconds)
+        return String.format("%02d:%02d:%02d", hours, minutes, seconds)
     }
 }
