@@ -1,7 +1,6 @@
 package com.example.djtimer.ui
 
 import android.os.Build
-import android.util.Log
 import androidx.activity.compose.BackHandler
 import androidx.annotation.RequiresApi
 import androidx.compose.animation.core.animateDpAsState
@@ -50,7 +49,6 @@ import com.example.djtimer.HideSystemBars
 import com.example.djtimer.R
 
 
-
 @RequiresApi(Build.VERSION_CODES.S)
 @Composable
 fun TimerCountScreen(navController: NavController, backStackEntry: NavBackStackEntry) {
@@ -97,15 +95,15 @@ fun TimerCountScreen(navController: NavController, backStackEntry: NavBackStackE
     val isRunning = timerState == TimerState.InProgress
     // Scaleアニメーションの値を設定
     val stopBtnScaleY by animateFloatAsState(
-        targetValue = if (timerState == TimerState.InProgress || timerState == TimerState.Paused ) 1f else  0f ,
+        targetValue = if (timerState == TimerState.InProgress || timerState == TimerState.Paused) 1f else 0f,
         animationSpec = tween(durationMillis = 500),
         label = "stopBtnScaleY"
     )
 
     val contentScaleY by animateFloatAsState(
-            targetValue = if (isResetting) 0f else 1f,
-    animationSpec = tween(500),
-    label = "contentScaleY"
+        targetValue = if (isResetting) 0f else 1f,
+        animationSpec = tween(500),
+        label = "contentScaleY"
     )
 
 // Resetボタン（押
@@ -127,7 +125,7 @@ fun TimerCountScreen(navController: NavController, backStackEntry: NavBackStackE
             modifier = Modifier
                 .fillMaxSize()
                 .background(Color.Blue)
-        ) // 背景 青
+        )
 
         val pinkHeightPx = boxHeight * animatedHeightFraction
         val pinkHeightDp = with(LocalDensity.current) { pinkHeightPx.toDp() }
@@ -137,7 +135,7 @@ fun TimerCountScreen(navController: NavController, backStackEntry: NavBackStackE
                 .fillMaxWidth()
                 .height(pinkHeightDp)
                 .align(Alignment.BottomStart)
-                .background(Color(0xFFFF1493)) // ピンク
+                .background(Color(0xFFFF1493))
         )
 
         val density = LocalDensity.current
@@ -166,7 +164,7 @@ fun TimerCountScreen(navController: NavController, backStackEntry: NavBackStackE
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Box(modifier = Modifier.offset(y = timerOffsetY)) {
-                    Box (
+                    Box(
                         modifier = Modifier.graphicsLayer {
                             scaleY = contentScaleY
                             transformOrigin = TransformOrigin(0.5f, 1f)  // 下端基準（アンカーポイントを下）
@@ -184,7 +182,7 @@ fun TimerCountScreen(navController: NavController, backStackEntry: NavBackStackE
                 Spacer(modifier = Modifier.height(32.dp))
 
                 Box(modifier = Modifier.offset(y = buttonOffsetY)) {
-                    Column (
+                    Column(
                         verticalArrangement = Arrangement.Center,
                         horizontalAlignment = Alignment.CenterHorizontally,
                         modifier = Modifier.align(Alignment.Center)
@@ -206,17 +204,21 @@ fun TimerCountScreen(navController: NavController, backStackEntry: NavBackStackE
                                     contentColor = Color.Blue       // 文字色
                                 ),
                                 shape = RoundedCornerShape(0.dp),
-                                modifier = Modifier.width(300.dp).height(90.dp)
+                                modifier = Modifier
+                                    .width(300.dp)
+                                    .height(90.dp)
                             ) {
                                 Text(
-                                    if (isRunning) stringResource(id = R.string.stop) else stringResource(id = R.string.start),
+                                    if (isRunning) stringResource(id = R.string.stop) else stringResource(
+                                        id = R.string.start
+                                    ),
                                     fontSize = 50.sp
                                 )
                             }
                         }
                         Spacer(modifier = Modifier.height(8.dp))
 
-                        Box (
+                        Box(
                             modifier = Modifier
                                 .graphicsLayer {
                                     scaleY = contentScaleY
@@ -247,7 +249,7 @@ fun TimerCountScreen(navController: NavController, backStackEntry: NavBackStackE
                                 while (true) {
                                     if (animatedHeightFraction == 0f && contentScaleY == 0f) {
                                         viewModel.reset()
-                                        navController.popBackStack("input",false)
+                                        navController.popBackStack("input", false)
                                         break
                                     }
                                     kotlinx.coroutines.delay(50)
