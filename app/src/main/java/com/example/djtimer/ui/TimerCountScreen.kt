@@ -74,13 +74,16 @@ fun TimerCountScreen(navController: NavController, backStackEntry: NavBackStackE
 
         val totalSeconds = viewModel.totalDurationSeconds?.toFloat() ?: 1f
         val remainingSeconds = viewModel.remainingDurationSeconds.toFloat() ?: 0f
-        Log.v("ろぐ", "total = $totalSeconds, reaming = $remainingSeconds")
         (remainingSeconds / totalSeconds).coerceIn(0f, 1f)
     }
 
     val animatedHeightFraction by animateFloatAsState(
-        targetValue = 1f - remainingRatio, // 0f → ピンク無し、1f → 全面ピンク
-        animationSpec = tween(500), label = "heightFraction"
+        targetValue = when (timerState) {
+            TimerState.BeforeStart -> 0f  // Start前はピンク無し（青のまま）
+            else -> 1f - remainingRatio   // 手番中のみピンクせり上がり
+        }, // 0f → ピンク無し、1f → 全面ピンク
+        animationSpec = tween(500),
+        label = "heightFraction"
     )
 
     LaunchedEffect(timerState) {
@@ -144,7 +147,7 @@ fun TimerCountScreen(navController: NavController, backStackEntry: NavBackStackE
                         text = timeDisplay,
                         style = MaterialTheme.typography.headlineLarge,
                         color = Color.White,
-                        fontSize = 90.sp
+                        fontSize = 80.sp
                     )
                 }
 
