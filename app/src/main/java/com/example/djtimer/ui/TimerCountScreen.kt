@@ -36,7 +36,9 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.TransformOrigin
@@ -57,6 +59,8 @@ fun TimerCountScreen(navController: NavController, backStackEntry: NavBackStackE
     BackHandler(enabled = true) {
         // 何もしない → 戻れなくする
     }
+    HideSystemBars()
+
 
     val parentEntry = remember(backStackEntry) {
         navController.getBackStackEntry("input")
@@ -70,6 +74,7 @@ fun TimerCountScreen(navController: NavController, backStackEntry: NavBackStackE
     val timeDisplay by viewModel.timeRemainingText.collectAsState()
     val displayMode = rememberDisplayMode()
 
+    var isResetting by remember { mutableStateOf(false) }
 
     val remainingRatio = remember(timeDisplay) {
         // 残り時間（秒）を割合に変換（適宜調整）
@@ -80,14 +85,30 @@ fun TimerCountScreen(navController: NavController, backStackEntry: NavBackStackE
     }
 
     val animatedHeightFraction by animateFloatAsState(
-        targetValue = when (timerState) {
-            TimerState.BeforeStart -> 0f  // Start前はピンク無し（青のまま）
-            else -> 1f - remainingRatio   // 手番中のみピンクせり上がり
+        targetValue = when {
+            isResetting -> 0f  // Reset中は必ず0（下まで下げる）
+            timerState == TimerState.BeforeStart -> 0f
+            else -> 1f - remainingRatio
         }, // 0f → ピンク無し、1f → 全面ピンク
         animationSpec = tween(500),
         label = "heightFraction"
     )
 
+    val isRunning = timerState == TimerState.InProgress
+    // Scaleアニメーションの値を設定
+    val stopBtnScaleY by animateFloatAsState(
+        targetValue = if (timerState == TimerState.InProgress || timerState == TimerState.Paused ) 1f else  0f ,
+        animationSpec = tween(durationMillis = 500),
+        label = "stopBtnScaleY"
+    )
+
+    val contentScaleY by animateFloatAsState(
+            targetValue = if (isResetting) 0f else 1f,
+    animationSpec = tween(500),
+    label = "contentScaleY"
+    )
+
+// Resetボタン（押
     LaunchedEffect(timerState) {
         if (timerState == TimerState.Done) {
             navController.navigate("done") {
@@ -124,7 +145,7 @@ fun TimerCountScreen(navController: NavController, backStackEntry: NavBackStackE
 
         val timerOffsetY by animateDpAsState(
             targetValue = when (displayMode) {
-                DisplayModes.FLEX -> parentHeight / -4
+                DisplayModes.FLEX -> parentHeight / -8
                 else -> 0.dp
             },
             animationSpec = tween(400), label = "timerOffsetY"
@@ -132,7 +153,7 @@ fun TimerCountScreen(navController: NavController, backStackEntry: NavBackStackE
 
         val buttonOffsetY by animateDpAsState(
             targetValue = when (displayMode) {
-                DisplayModes.FLEX -> parentHeight / 4
+                DisplayModes.FLEX -> parentHeight / 8
                 else -> 0.dp
             },
             animationSpec = tween(400), label = "buttonOffsetY"
@@ -145,12 +166,19 @@ fun TimerCountScreen(navController: NavController, backStackEntry: NavBackStackE
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Box(modifier = Modifier.offset(y = timerOffsetY)) {
-                    Text(
-                        text = timeDisplay,
-                        style = MaterialTheme.typography.headlineLarge,
-                        color = Color.White,
-                        fontSize = 80.sp
-                    )
+                    Box (
+                        modifier = Modifier.graphicsLayer {
+                            scaleY = contentScaleY
+                            transformOrigin = TransformOrigin(0.5f, 1f)  // 下端基準（アンカーポイントを下）
+                        }
+                    ) {
+                        Text(
+                            text = timeDisplay,
+                            style = MaterialTheme.typography.headlineLarge,
+                            color = Color.White,
+                            fontSize = 80.sp
+                        )
+                    }
                 }
 
                 Spacer(modifier = Modifier.height(32.dp))
@@ -161,9 +189,68 @@ fun TimerCountScreen(navController: NavController, backStackEntry: NavBackStackE
                         horizontalAlignment = Alignment.CenterHorizontally,
                         modifier = Modifier.align(Alignment.Center)
                     ) {
-                        StartStopButton(viewModel)
+                        Box(
+                            modifier = Modifier
+                                .graphicsLayer {
+                                    scaleY = if (!isResetting) stopBtnScaleY else contentScaleY
+                                    transformOrigin = TransformOrigin(0.5f, 1f)  // 下端基準（アンカーポイントを下）
+                                }
+                        ) {
+                            Button(
+                                onClick = {
+                                    if (isRunning) viewModel.stopTimer()
+                                    else viewModel.startTimer()
+                                },
+                                colors = ButtonDefaults.buttonColors(
+                                    containerColor = Color(0xFFFFD700),  // 背景色
+                                    contentColor = Color.Blue       // 文字色
+                                ),
+                                shape = RoundedCornerShape(0.dp),
+                                modifier = Modifier.width(300.dp).height(90.dp)
+                            ) {
+                                Text(
+                                    if (isRunning) stringResource(id = R.string.stop) else stringResource(id = R.string.start),
+                                    fontSize = 50.sp
+                                )
+                            }
+                        }
                         Spacer(modifier = Modifier.height(8.dp))
-                        ResetButton(navController, viewModel)
+
+                        Box (
+                            modifier = Modifier
+                                .graphicsLayer {
+                                    scaleY = contentScaleY
+                                    transformOrigin = TransformOrigin(0.5f, 1f)  // 下端基準（アンカーポイントを下）
+                                }
+                        ) {
+                            Button(
+                                onClick = {
+                                    isResetting = true // まずピンクを下げる
+                                },
+                                colors = ButtonDefaults.buttonColors(
+                                    containerColor = Color(0xFFFFD700),  // 背景色
+                                    contentColor = Color.Blue       // 文字色
+                                ),
+                                shape = RoundedCornerShape(0.dp),
+                                modifier = Modifier.width(300.dp)
+
+                            ) {
+                                Text(
+                                    stringResource(id = R.string.reset),
+                                    fontSize = 20.sp
+                                )
+                            }
+                        }
+
+                        LaunchedEffect(isResetting, animatedHeightFraction) {
+                            if (isResetting && animatedHeightFraction == 0f && contentScaleY == 0f) {
+                                // ピンクが完全に下がったらリセット＆遷移
+                                viewModel.reset()
+                                navController.navigate("input") {
+                                    popUpTo("timer") { inclusive = true }
+                                }
+                            }
+                        }
                     }
                 }
             }
@@ -181,69 +268,5 @@ fun TimerCountScreen(navController: NavController, backStackEntry: NavBackStackE
                 )
             }
         }
-    }
-}
-
-@RequiresApi(Build.VERSION_CODES.S)
-@Composable
-fun StartStopButton(viewModel: DJTimerViewModel) {
-    HideSystemBars()
-    val timerState by viewModel.timerState.collectAsState()
-    val isRunning = timerState == TimerState.InProgress
-    // Scaleアニメーションの値を設定
-    val scaleYanime by animateFloatAsState(
-        targetValue = if (timerState == TimerState.InProgress) 1f else 0f,
-        animationSpec = tween(durationMillis = 500),
-        label = "scaleY"
-    )
-
-    Box(
-        modifier = Modifier
-            .graphicsLayer {
-                scaleY = scaleYanime
-                transformOrigin = TransformOrigin(0.5f, 1f)  // 下端基準（アンカーポイントを下）
-            }
-    ) {
-        Button(
-            onClick = {
-                if (isRunning) viewModel.stopTimer()
-                else viewModel.startTimer()
-            },
-            colors = ButtonDefaults.buttonColors(
-                containerColor = Color(0xFFFFD700),  // 背景色
-                contentColor = Color.Blue       // 文字色
-            ),
-            shape = RoundedCornerShape(0.dp),
-            modifier = Modifier.width(300.dp).height(90.dp)
-        ) {
-            Text(
-                if (isRunning) stringResource(id = R.string.stop) else stringResource(id = R.string.start),
-                fontSize = 50.sp
-            )
-        }
-    }
-}
-
-@RequiresApi(Build.VERSION_CODES.S)
-@Composable
-fun ResetButton(navController: NavController, viewModel: DJTimerViewModel) {
-    Button(
-        onClick = {
-            viewModel.reset()
-            navController.navigate("input") {
-                popUpTo("timer") { inclusive = true }  // timerを消してinputに戻る
-            }
-        },
-        colors = ButtonDefaults.buttonColors(
-            containerColor = Color(0xFFFFD700),  // 背景色
-            contentColor = Color.Blue       // 文字色
-        ),
-        shape = RoundedCornerShape(0.dp),
-        modifier = Modifier.width(300.dp)
-
-    ) {
-        Text(
-            stringResource(id = R.string.reset),
-            fontSize = 20.sp)
     }
 }
