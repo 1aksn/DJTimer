@@ -95,7 +95,7 @@ fun TimerCountScreen(navController: NavController, backStackEntry: NavBackStackE
     val isRunning = timerState == TimerState.InProgress
     // Scaleアニメーションの値を設定
     val stopBtnScaleY by animateFloatAsState(
-        targetValue = if (timerState == TimerState.InProgress || timerState == TimerState.Paused) 1f else 0f,
+        targetValue = if (timerState == TimerState.InProgress || timerState == TimerState.Paused || timerState == TimerState.Done) 1f else 0f,
         animationSpec = tween(durationMillis = 500),
         label = "stopBtnScaleY"
     )
@@ -106,7 +106,6 @@ fun TimerCountScreen(navController: NavController, backStackEntry: NavBackStackE
         label = "contentScaleY"
     )
 
-// Resetボタン（押
     LaunchedEffect(timerState) {
         if (timerState == TimerState.Done) {
             navController.navigate("done") {
