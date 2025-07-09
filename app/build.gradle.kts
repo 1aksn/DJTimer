@@ -81,4 +81,6 @@ dependencies {
     // 折りたたみデバイス対応
     implementation("androidx.window:window:1.2.0")
     implementation("com.google.accompanist:accompanist-adaptive:0.32.0")
+
+    implementation("com.google.accompanist:accompanist-navigation-animation:0.34.0")
 }
