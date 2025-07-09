@@ -242,12 +242,15 @@ fun TimerCountScreen(navController: NavController, backStackEntry: NavBackStackE
                             }
                         }
 
-                        LaunchedEffect(isResetting, animatedHeightFraction) {
-                            if (isResetting && animatedHeightFraction == 0f && contentScaleY == 0f) {
-                                // ピンクが完全に下がったらリセット＆遷移
-                                viewModel.reset()
-                                navController.navigate("input") {
-                                    popUpTo("timer") { inclusive = true }
+                        LaunchedEffect(isResetting) {
+                            if (isResetting) {
+                                while (true) {
+                                    if (animatedHeightFraction == 0f && contentScaleY == 0f) {
+                                        viewModel.reset()
+                                        navController.popBackStack("input",false)
+                                        break
+                                    }
+                                    kotlinx.coroutines.delay(50)
                                 }
                             }
                         }

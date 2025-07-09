@@ -23,8 +23,8 @@ fun AppNavGraph(navController: NavHostController) {
             TimerCountScreen(navController, backStackEntry)
         }
 
-        composable("done") {
-            DoneScreen(navController)
+        composable("done") { backStackEntry ->
+            DoneScreen(navController, backStackEntry)
         }
     }
 }
