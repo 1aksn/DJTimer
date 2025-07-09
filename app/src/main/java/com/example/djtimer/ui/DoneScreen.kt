@@ -44,7 +44,8 @@ fun DoneScreen(navController: NavController) {
                 ),
                 shape = RoundedCornerShape(0.dp),
                 modifier = Modifier.width(300.dp)) {
-                Text("Reset")
+                Text(stringResource(id = R.string.reset),
+                    fontSize = 20.sp)
             }
         }
     }
