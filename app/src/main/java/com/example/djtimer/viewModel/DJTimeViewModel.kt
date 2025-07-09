@@ -145,6 +145,7 @@ class DJTimerViewModel @Inject constructor() : ViewModel() {
                 Duration.ofMinutes(minutes)
             }
             inputMode.value == InputMode.StartEnd -> {
+                Log.v("ろぐ","startEnd")
                 val start = startTime.value ?: return
                 val end = endTime.value ?: return
 
@@ -204,7 +205,7 @@ class DJTimerViewModel @Inject constructor() : ViewModel() {
     fun stopTimer() {
         countdownJob?.cancel()
         pausedRemainingDuration = endTimeReference?.let { Duration.between(LocalDateTime.now(), it) }
-        _timerState.value = TimerState.BeforeStart
+        _timerState.value = TimerState.Paused
     }
 
     // アプリ再起動や画面復帰時に残り時間を再計算して再開
@@ -231,8 +232,11 @@ class DJTimerViewModel @Inject constructor() : ViewModel() {
             delay(1000)
             remaining = Duration.between(LocalDateTime.now(), endTimeReference ?: return)
         }
-        _timerState.value = TimerState.Done
-        _timeRemainingText.value = "DONE"
+        // ここでTimerStateがInProgressなら必ずDoneにする
+        if (_timerState.value == TimerState.InProgress) {
+            _timerState.value = TimerState.Done
+            _timeRemainingText.value = "DONE"
+        }
     }
 
     private fun formatDuration(duration: Duration): String {
