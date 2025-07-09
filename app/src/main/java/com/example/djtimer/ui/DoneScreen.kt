@@ -30,7 +30,7 @@ fun DoneScreen(navController: NavController) {
        ,contentAlignment = Alignment.Center) {
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
             Text(
-                stringResource(id = R.string.done), fontSize = 120.sp,
+                stringResource(id = R.string.done), fontSize = 100.sp,
                 style = MaterialTheme.typography.headlineLarge,
                 color = Color.White)
             Button(onClick = {
