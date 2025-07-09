@@ -147,20 +147,42 @@ class DJTimerViewModel @Inject constructor() : ViewModel() {
             inputMode.value == InputMode.StartEnd -> {
                 val start = startTime.value ?: return
                 val end = endTime.value ?: return
-                val todayStart = now.withHour(start.hour).withMinute(start.minute).withSecond(0)
-                val todayEnd = now.withHour(end.hour).withMinute(end.minute).withSecond(0)
 
+                val now = LocalDateTime.now()
+
+
+                // 基準のstart/end（今日のもの）
+                var startDateTime = now.withHour(start.hour).withMinute(start.minute).withSecond(0).withNano(0)
+                var endDateTime = now.withHour(end.hour).withMinute(end.minute).withSecond(0).withNano(0)
+
+                // Endの翌日跨ぎ対応
+                if (endDateTime.isBefore(startDateTime) || endDateTime == startDateTime) {
+                    endDateTime = endDateTime.plusDays(1)
+                }
+
+                // 未来のStartに合わせる必要があるか判定（Startが未来で、Endも未来なら未来セッション）
+                if (now.isBefore(startDateTime)) {
+                    // 今はStart前 → OK（待機状態）
+                } else if (now.isBefore(endDateTime)) {
+                    // 今はStart以降End未満 → 手番中
+                } else {
+                    // 今はセッション終了後 → 次のセッションに合わせる
+                    startDateTime = startDateTime.plusDays(1)
+                    endDateTime = endDateTime.plusDays(1)
+                }
+
+                val inSession = !now.isBefore(startDateTime) && now.isBefore(endDateTime)
                 when {
-                    now.isBefore(todayStart) -> {
+                    now.isBefore(startDateTime) -> {
                         viewModelScope.launch {
                             _timerState.value = TimerState.BeforeStart
-                            updateTimeLoop(Duration.between(now, todayStart))
+                            updateTimeLoop(Duration.between(now, startDateTime))
                             startTimer() // 自動で本番開始へ
                         }
                         return
                     }
-                    now.isBefore(todayEnd) -> {
-                        Duration.between(now, todayEnd)
+                   inSession -> {
+                        Duration.between(now, endDateTime)
                     }
                     else -> return
                 }
