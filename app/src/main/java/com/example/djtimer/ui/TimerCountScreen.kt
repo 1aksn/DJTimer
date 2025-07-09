@@ -39,6 +39,8 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.TransformOrigin
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavBackStackEntry
@@ -188,21 +190,37 @@ fun StartStopButton(viewModel: DJTimerViewModel) {
     HideSystemBars()
     val timerState by viewModel.timerState.collectAsState()
     val isRunning = timerState == TimerState.InProgress
+    // Scaleアニメーションの値を設定
+    val scaleYanime by animateFloatAsState(
+        targetValue = if (timerState == TimerState.InProgress) 1f else 0f,
+        animationSpec = tween(durationMillis = 500),
+        label = "scaleY"
+    )
 
-    Button(
-        onClick = {
-            if (isRunning) viewModel.stopTimer()
-            else viewModel.startTimer()
-        },
-        colors = ButtonDefaults.buttonColors(
-            containerColor = Color(0xFFFFD700),  // 背景色
-            contentColor = Color.Blue       // 文字色
-        ),
-        shape = RoundedCornerShape(0.dp),
-        modifier = Modifier.width(300.dp).height(90.dp)
+    Box(
+        modifier = Modifier
+            .graphicsLayer {
+                scaleY = scaleYanime
+                transformOrigin = TransformOrigin(0.5f, 1f)  // 下端基準（アンカーポイントを下）
+            }
     ) {
-        Text(if (isRunning) stringResource(id = R.string.stop) else stringResource(id = R.string.start) ,
-            fontSize = 50.sp)
+        Button(
+            onClick = {
+                if (isRunning) viewModel.stopTimer()
+                else viewModel.startTimer()
+            },
+            colors = ButtonDefaults.buttonColors(
+                containerColor = Color(0xFFFFD700),  // 背景色
+                contentColor = Color.Blue       // 文字色
+            ),
+            shape = RoundedCornerShape(0.dp),
+            modifier = Modifier.width(300.dp).height(90.dp)
+        ) {
+            Text(
+                if (isRunning) stringResource(id = R.string.stop) else stringResource(id = R.string.start),
+                fontSize = 50.sp
+            )
+        }
     }
 }
 
