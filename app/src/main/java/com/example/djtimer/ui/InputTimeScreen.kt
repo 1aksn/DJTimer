@@ -14,6 +14,7 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
@@ -29,6 +30,7 @@ import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -235,26 +237,31 @@ fun InputTimeScreen(navController: NavController) {
                         }
 
                         if (showDialog) {
-                            androidx.compose.material3.AlertDialog(
+                            AlertDialog(
                                 onDismissRequest = { setShowDialog(false) },
                                 confirmButton = {
                                     Button(
                                         onClick = {
-                                        viewModel.reset()
-                                        setShowDialog(false)
-                                    },
+                                            viewModel.reset()
+                                            setShowDialog(false)
+                                        },
                                         colors = ButtonDefaults.buttonColors(
                                             containerColor = Color(0xFFFFD700),  // 背景色（黄色）
                                             contentColor = Color.Blue           // 文字色（青）
                                         ),
                                         shape = RoundedCornerShape(15.dp),
-                                        modifier = Modifier.width(150.dp)
+                                        modifier = Modifier.width(100.dp)
+                                            .border(2.dp, Color(0xFFFF1493), RoundedCornerShape(10.dp))
                                     ) {
                                         Text("OK")
                                     }
                                 },
-                                title = { Text("エラー") },
-                                text = { Text(dialogMessage) }
+                                title = { Text("ERROR") },
+                                text = { Text(dialogMessage) },
+                                containerColor = Color(0xFFFFD700),
+                                shape = RoundedCornerShape(5.dp),
+                                tonalElevation = 0.dp,
+                                modifier = Modifier.border(4.dp, Color(0xFFFF1493), RoundedCornerShape(5.dp)).width(350.dp) // 赤い枠線
                             )
                         }
                     }

@@ -281,9 +281,9 @@ class DJTimerViewModel @Inject constructor() : ViewModel() {
     fun validateInput(): String? {
         return when (inputMode.value) {
             InputMode.PlayTime -> {
-                val minutes = playTime.value.toIntOrNull() ?: return "正しい時間を入力してください"
+                val minutes = playTime.value.toIntOrNull() ?: return "Input the correct time"
                 if (minutes <= 0 || minutes > 600) {
-                    "1 ~ 600分までの時間を入れてね"
+                    "Input time from 1 to 600 min"
                 } else null
             }
             InputMode.StartEnd -> {
@@ -293,11 +293,11 @@ class DJTimerViewModel @Inject constructor() : ViewModel() {
                 if (duration != null) {
                     val minutes = duration.toMinutes()
                     if (minutes > 600) {
-                        "start ~ endは10時間以内にしてね"
+                        "Start to end (current time to end) must be within 10 hours"
                     } else null
                 } else null
             }
-            else -> "時間を入力してください"
+            else -> "Input Time"
         }
     }
 }
