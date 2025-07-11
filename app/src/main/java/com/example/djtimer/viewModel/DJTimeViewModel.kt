@@ -103,13 +103,51 @@ class DJTimerViewModel @Inject constructor() : ViewModel() {
                 playTime.value.toIntOrNull()?.let { "$it min" } ?: ""
             }
             InputMode.StartEnd -> {
-                if (startTime.value != null && endTime.value != null) {
-                    val duration = Duration.between(startTime.value, endTime.value)
+                val duration = startEndTotalTime()
+                if (duration != null) {
                     "${duration.toMinutes()} min"
                 } else ""
             }
             else -> ""
         }
+    }
+
+    private fun startEndTotalTime (): Duration? {
+        val start = startTime.value ?: return null
+        val end = endTime.value ?: return null
+
+        val now = LocalDateTime.now()
+
+
+        // 基準のstart/end（今日のもの）
+        var startDateTime = now.withHour(start.hour).withMinute(start.minute).withSecond(0).withNano(0)
+        var endDateTime = now.withHour(end.hour).withMinute(end.minute).withSecond(0).withNano(0)
+
+        // Endの翌日跨ぎ対応
+        if (endDateTime.isBefore(startDateTime) || endDateTime == startDateTime) {
+            endDateTime = endDateTime.plusDays(1)
+        }
+
+        // 未来のStartに合わせる必要があるか判定（Startが未来で、Endも未来なら未来セッション）
+        if (now.isBefore(startDateTime)) {
+            // 今はStart前 → OK（待機状態）
+        } else if (now.isBefore(endDateTime)) {
+            // 今はStart以降End未満 → 手番中
+        } else {
+            // 今はセッション終了後 → 次のセッションに合わせる
+            startDateTime = startDateTime.plusDays(1)
+            endDateTime = endDateTime.plusDays(1)
+        }
+
+        val inSession = !now.isBefore(startDateTime) && now.isBefore(endDateTime)
+        val duration = if (now.isBefore(startDateTime)) {
+            Duration.between(startDateTime, endDateTime)
+        } else if (inSession) {
+            Duration.between(now,endDateTime)
+        } else null
+
+        return duration
+
     }
 
     fun reset() {
@@ -123,11 +161,6 @@ class DJTimerViewModel @Inject constructor() : ViewModel() {
         endTimeReference = null
         totalTimeText.value = ""
         _initialDurationSeconds = null
-    }
-
-    fun canStartTimer(): Boolean {
-        return (inputMode.value == InputMode.PlayTime && playTime.value.toIntOrNull() != null)
-                || (inputMode.value == InputMode.StartEnd && startTime.value != null && endTime.value != null)
     }
 
     fun startTimer() {
@@ -243,5 +276,28 @@ class DJTimerViewModel @Inject constructor() : ViewModel() {
         val minutes = duration.toMinutesPart()
         val seconds = duration.toSecondsPart()
         return String.format("%02d:%02d:%02d", hours, minutes, seconds)
+    }
+
+    fun validateInput(): String? {
+        return when (inputMode.value) {
+            InputMode.PlayTime -> {
+                val minutes = playTime.value.toIntOrNull() ?: return "正しい時間を入力してください"
+                if (minutes <= 0 || minutes > 600) {
+                    "1 ~ 600分までの時間を入れてね"
+                } else null
+            }
+            InputMode.StartEnd -> {
+                val start = startTime.value
+                val end = endTime.value
+                val duration = startEndTotalTime()
+                if (duration != null) {
+                    val minutes = duration.toMinutes()
+                    if (minutes > 600) {
+                        "start ~ endは10時間以内にしてね"
+                    } else null
+                } else null
+            }
+            else -> "時間を入力してください"
+        }
     }
 }

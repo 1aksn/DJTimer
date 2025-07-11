@@ -145,7 +145,11 @@ fun InputTimeScreen(navController: NavController) {
             // PlayTime 入力（分）
             OutlinedTextField(
                 value = playTime,
-                onValueChange = { viewModel.updatePlayTime(it) },
+                onValueChange = {
+                    if (it.length <= 4) {
+                        viewModel.updatePlayTime(it)
+                    }
+                },
                 label = { Text(stringResource(id = R.string.input_hint)) },
                 enabled = inputMode != InputMode.StartEnd,
                 keyboardOptions = KeyboardOptions.Default.copy(
@@ -210,8 +214,14 @@ fun InputTimeScreen(navController: NavController) {
                     ) {
                         Button(
                             onClick = {
-                                viewModel.startTimer()
+                                val error = viewModel.validateInput()
+                                if (error != null) {
+                                    setDialogMessage(error)
+                                    setShowDialog(true)
+                                } else {
+                                    viewModel.startTimer()
                                     navController.navigate("timer") {
+                                    }
                                 }
                             },
                             colors = ButtonDefaults.buttonColors(
@@ -222,6 +232,30 @@ fun InputTimeScreen(navController: NavController) {
                             modifier = Modifier.weight(1f)
                         ) {
                             Text(stringResource(id = R.string.go))
+                        }
+
+                        if (showDialog) {
+                            androidx.compose.material3.AlertDialog(
+                                onDismissRequest = { setShowDialog(false) },
+                                confirmButton = {
+                                    Button(
+                                        onClick = {
+                                        viewModel.reset()
+                                        setShowDialog(false)
+                                    },
+                                        colors = ButtonDefaults.buttonColors(
+                                            containerColor = Color(0xFFFFD700),  // 背景色（黄色）
+                                            contentColor = Color.Blue           // 文字色（青）
+                                        ),
+                                        shape = RoundedCornerShape(15.dp),
+                                        modifier = Modifier.width(150.dp)
+                                    ) {
+                                        Text("OK")
+                                    }
+                                },
+                                title = { Text("エラー") },
+                                text = { Text(dialogMessage) }
+                            )
                         }
                     }
                 }
