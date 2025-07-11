@@ -21,7 +21,7 @@ Gigandectさんの作成した[DJ TIMER APP](https://gigandect.github.io/DJtimer
 - Android OS 12以上
 
 ### インストール手順
-1. releaseページへアクセス
+1. releasesページへアクセス
 2. app-release.apkをダウンロード
 3. ダウンロードしたapkファイルを開く
 4. 「提供元不明のアプリインストールを許可」画面が出るので許可する
