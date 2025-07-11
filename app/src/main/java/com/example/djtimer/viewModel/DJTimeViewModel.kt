@@ -235,7 +235,6 @@ class DJTimerViewModel @Inject constructor() : ViewModel() {
         // ここでTimerStateがInProgressなら必ずDoneにする
         if (_timerState.value == TimerState.InProgress) {
             _timerState.value = TimerState.Done
-            _timeRemainingText.value = "DONE"
         }
     }
 

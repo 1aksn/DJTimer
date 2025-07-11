@@ -47,6 +47,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavBackStackEntry
 import com.example.djtimer.HideSystemBars
 import com.example.djtimer.R
+import kotlin.math.tan
 
 
 @RequiresApi(Build.VERSION_CODES.S)
@@ -163,18 +164,44 @@ fun TimerCountScreen(navController: NavController, backStackEntry: NavBackStackE
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Box(modifier = Modifier.offset(y = timerOffsetY)) {
-                    Box(
-                        modifier = Modifier.graphicsLayer {
-                            scaleY = contentScaleY
-                            transformOrigin = TransformOrigin(0.5f, 1f)  // 下端基準（アンカーポイントを下）
-                        }
+
+                    Column(
+                        verticalArrangement = Arrangement.Center,
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        modifier = Modifier.align(Alignment.Center)
                     ) {
-                        Text(
-                            text = timeDisplay,
-                            style = MaterialTheme.typography.headlineLarge,
-                            color = Color.White,
-                            fontSize = 80.sp
-                        )
+                        Box(
+                            modifier = Modifier.graphicsLayer {
+                                scaleY = contentScaleY
+                                transformOrigin = TransformOrigin(0.5f, 1f)  // 下端基準（アンカーポイントを下）
+                            }
+                        ) {
+                            Text(
+                                text = if (timerState == TimerState.BeforeStart) stringResource(R.string.until_turn) else if (timerState == TimerState.InProgress || timerState == TimerState.Paused) stringResource(
+                                    R.string.reaming_time
+                                ) else "",
+                                style = MaterialTheme.typography.headlineLarge,
+                                color = Color(0xFFFFD700),
+                                fontSize = 50.sp
+                            )
+                        }
+
+                        Spacer(modifier = Modifier.height(16.dp))
+
+
+                        Box(
+                            modifier = Modifier.graphicsLayer {
+                                scaleY = contentScaleY
+                                transformOrigin = TransformOrigin(0.5f, 1f)  // 下端基準（アンカーポイントを下）
+                            }
+                        ) {
+                            Text(
+                                text = timeDisplay,
+                                style = MaterialTheme.typography.headlineLarge,
+                                color = Color.White,
+                                fontSize = 80.sp
+                            )
+                        }
                     }
                 }
 
@@ -264,12 +291,31 @@ fun TimerCountScreen(navController: NavController, backStackEntry: NavBackStackE
                 modifier = Modifier.fillMaxSize(),
                 contentAlignment = Alignment.Center
             ) {
-                Text(
-                    text = timeDisplay,
-                    style = MaterialTheme.typography.headlineLarge,
-                    color = Color.White,
-                    fontSize = 110.sp
-                )
+                Column(
+                    verticalArrangement = Arrangement.Center,
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    modifier = Modifier.align(Alignment.Center)
+                ) {
+                    Text(
+                        text = if (timerState == TimerState.BeforeStart) stringResource(R.string.until_turn) else if (timerState == TimerState.InProgress || timerState == TimerState.Paused) stringResource(
+                            R.string.reaming_time
+                        ) else "",
+                        style = MaterialTheme.typography.headlineLarge,
+                        color = Color(0xFFFFD700),
+                        fontSize = 50.sp
+                    )
+
+
+                    Spacer(modifier = Modifier.height(16.dp))
+
+                    Text(
+                        text = timeDisplay,
+                        style = MaterialTheme.typography.headlineLarge,
+                        color = Color.White,
+                        fontSize = 110.sp
+                    )
+
+                }
             }
         }
     }
