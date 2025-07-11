@@ -9,6 +9,7 @@ import android.os.Build
 import java.time.LocalDateTime
 import java.time.ZoneId
 import android.provider.Settings
+import java.time.Duration
 
 object NotificationHelper {
     const val PREF_NAME = "timer_prefs"
@@ -29,6 +30,13 @@ object NotificationHelper {
                 context.startActivity(intent)
                 return  // 許可取るまではスケジュールしない
             }
+        }
+
+        // 最初からDurationが5分未満の場合は通知を送らない
+        val now = LocalDateTime.now()
+        val start = Duration.between(now, startTime).toMinutes()
+        if (start < 5 ) {
+            return
         }
 
         // 🔥 許可OKなので、通知をスケジュール
