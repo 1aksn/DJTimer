@@ -8,7 +8,7 @@ import com.example.djtimer.R
 
 // Google Fonts Providerを利用
 val luckiestGuyFontFamily = FontFamily(
-    Font(R.font.luckiest_guy)
+    Font(R.font.galindo)
 )
 
 // Typographyに適用
