@@ -54,6 +54,7 @@ dependencies {
     implementation(libs.androidx.activity)
     implementation(libs.androidx.constraintlayout)
     implementation(libs.androidx.navigation.compose.android)
+    implementation(libs.espresso.core)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -83,4 +84,5 @@ dependencies {
     implementation("com.google.accompanist:accompanist-adaptive:0.32.0")
 
     implementation("com.google.accompanist:accompanist-navigation-animation:0.34.0")
+    implementation ("androidx.compose.ui:ui-text-google-fonts:1.6.7")
 }

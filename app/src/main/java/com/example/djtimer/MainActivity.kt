@@ -1,9 +1,11 @@
 package com.example.djtimer
 
 import android.app.Activity
+import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.annotation.RequiresApi
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.SideEffect
 import androidx.compose.ui.input.nestedscroll.NestedScrollSource.Companion.SideEffect
@@ -13,18 +15,25 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
 import androidx.navigation.compose.rememberNavController
 import com.example.djtimer.nav.AppNavGraph
+import com.example.djtimer.ui.theme.DJTimerTheme
 import dagger.hilt.android.AndroidEntryPoint
 
 //import com.example.djtimer.ui.DjTimerApp
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
+    @RequiresApi(Build.VERSION_CODES.S)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
             // DjTimerApp()
             val navController = rememberNavController()
-            AppNavGraph(navController = navController)
+            setContent {
+                DJTimerTheme {
+                    AppNavGraph(navController = navController)
+
+                }
+            }
         }
     }
 }
