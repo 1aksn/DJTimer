@@ -35,7 +35,6 @@ class MainActivity : ComponentActivity() {
         setContent {
             val viewModel: DJTimerViewModel = hiltViewModel(LocalActivity.current as ViewModelStoreOwner)
             val startScreen by viewModel.currentScreen.collectAsState()
-
             val navController = rememberNavController()
 
             // ✅ 最後に見てた画面へ自動遷移

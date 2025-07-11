@@ -42,11 +42,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.TransformOrigin
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavBackStackEntry
 import com.example.djtimer.HideSystemBars
 import com.example.djtimer.R
+import com.example.djtimer.util.NotificationHelper
 import kotlin.math.tan
 
 
@@ -271,11 +273,16 @@ fun TimerCountScreen(navController: NavController, backStackEntry: NavBackStackE
                             }
                         }
 
+                        val context = LocalContext.current
+
                         LaunchedEffect(isResetting) {
                             if (isResetting) {
                                 while (true) {
                                     if (animatedHeightFraction == 0f && contentScaleY == 0f) {
                                         viewModel.reset()
+                                        if (timerState == TimerState.BeforeStart) {
+                                            NotificationHelper.resetNotificationFlag(context)
+                                        }
                                         viewModel.setCurrentScreen("input")
                                         navController.popBackStack("input", false)
                                         break

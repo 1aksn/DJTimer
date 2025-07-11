@@ -1,5 +1,6 @@
 package com.example.djtimer.viewModel
 
+import android.content.Context
 import android.os.Build
 import android.util.Log
 import androidx.annotation.RequiresApi
@@ -8,7 +9,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.djtimer.model.InputMode
 import com.example.djtimer.model.TimerState
+import com.example.djtimer.util.NotificationHelper
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -23,7 +26,7 @@ import javax.inject.Inject
 
 @RequiresApi(Build.VERSION_CODES.S)
 @HiltViewModel
-class DJTimerViewModel @Inject constructor() : ViewModel() {
+class DJTimerViewModel @Inject constructor( @ApplicationContext private val context: Context) : ViewModel() {
     private val _timerState = MutableStateFlow<TimerState>(TimerState.BeforeStart)
     val timerState = _timerState.asStateFlow()
     private val _timeRemainingText = MutableStateFlow("")
@@ -126,8 +129,6 @@ class DJTimerViewModel @Inject constructor() : ViewModel() {
         val end = endTime.value ?: return null
 
         val now = LocalDateTime.now()
-
-
         // 基準のstart/end（今日のもの）
         var startDateTime = now.withHour(start.hour).withMinute(start.minute).withSecond(0).withNano(0)
         var endDateTime = now.withHour(end.hour).withMinute(end.minute).withSecond(0).withNano(0)
@@ -191,9 +192,6 @@ class DJTimerViewModel @Inject constructor() : ViewModel() {
                 val start = startTime.value ?: return
                 val end = endTime.value ?: return
 
-                val now = LocalDateTime.now()
-
-
                 // 基準のstart/end（今日のもの）
                 var startDateTime = now.withHour(start.hour).withMinute(start.minute).withSecond(0).withNano(0)
                 var endDateTime = now.withHour(end.hour).withMinute(end.minute).withSecond(0).withNano(0)
@@ -217,6 +215,7 @@ class DJTimerViewModel @Inject constructor() : ViewModel() {
                 val inSession = !now.isBefore(startDateTime) && now.isBefore(endDateTime)
                 when {
                     now.isBefore(startDateTime) -> {
+                        NotificationHelper.scheduleNotification(context, startDateTime)
                         viewModelScope.launch {
                             _timerState.value = TimerState.BeforeStart
                             updateTimeLoop(Duration.between(now, startDateTime))
@@ -274,6 +273,9 @@ class DJTimerViewModel @Inject constructor() : ViewModel() {
             delay(1000)
             remaining = Duration.between(LocalDateTime.now(), endTimeReference ?: return)
         }
+        if (_timerState.value == TimerState.BeforeStart) {
+            NotificationHelper.resetNotificationFlag(context)
+        }
         // ここでTimerStateがInProgressなら必ずDoneにする
         if (_timerState.value == TimerState.InProgress) {
             _timerState.value = TimerState.Done
@@ -296,8 +298,6 @@ class DJTimerViewModel @Inject constructor() : ViewModel() {
                 } else null
             }
             InputMode.StartEnd -> {
-                val start = startTime.value
-                val end = endTime.value
                 val duration = startEndTotalTime()
                 if (duration != null) {
                     val minutes = duration.toMinutes()
