@@ -1,7 +1,9 @@
 package com.example.djtimer.ui
 
 import android.os.Build
+import androidx.activity.compose.BackHandler
 import androidx.annotation.RequiresApi
+import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
@@ -12,6 +14,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
@@ -38,18 +41,26 @@ import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavController
 import com.example.djtimer.HideSystemBars
 import com.example.djtimer.R
+import com.example.djtimer.model.DisplayModes
+import com.example.djtimer.ui.Mode.rememberDisplayMode
 import com.example.djtimer.viewModel.DJTimerViewModel
 import kotlinx.coroutines.delay
 
 @RequiresApi(Build.VERSION_CODES.S)
 @Composable
 fun DoneScreen(navController: NavController, backStackEntry: NavBackStackEntry) {
+    BackHandler(enabled = true) {
+        // 何もしない → 戻れなくする
+    }
+
     val parentEntry = remember(backStackEntry) {
         navController.getBackStackEntry("input")
     }
     val viewModel: DJTimerViewModel = hiltViewModel(parentEntry)
 
     var isResetting by remember { mutableStateOf(false) }
+
+    val displayMode = rememberDisplayMode()
 
     val animatedHeightFraction by animateFloatAsState(
         targetValue = if (isResetting) 1f else 0f,
@@ -62,6 +73,7 @@ fun DoneScreen(navController: NavController, backStackEntry: NavBackStackEntry) 
         animationSpec = tween(500),
         label = "contentScaleY"
     )
+
 
     HideSystemBars()
 
@@ -78,6 +90,25 @@ fun DoneScreen(navController: NavController, backStackEntry: NavBackStackEntry) 
         val blueHeightPx = constraints.maxHeight * animatedHeightFraction
         val blueHeightDp = with(LocalDensity.current) { blueHeightPx.toDp() }
 
+        val density = LocalDensity.current
+        val parentHeight = with(density) { constraints.maxHeight.toDp() }
+
+        val offsetYUp by animateDpAsState(
+            targetValue = when (displayMode) {
+                DisplayModes.FLEX -> parentHeight / -4
+                else -> 0.dp
+            },
+            animationSpec = tween(400), label = "timerOffsetY"
+        )
+
+        val offsetYDown by animateDpAsState(
+            targetValue = when (displayMode) {
+                DisplayModes.FLEX -> parentHeight / 4
+                else -> 0.dp
+            },
+            animationSpec = tween(400), label = "buttonOffsetY"
+        )
+
         Box(
             modifier = Modifier
                 .fillMaxWidth()
@@ -91,37 +122,42 @@ fun DoneScreen(navController: NavController, backStackEntry: NavBackStackEntry) 
             verticalArrangement = Arrangement.Center,
             modifier = Modifier.fillMaxSize()
             ) {
-            Box(
-                modifier = Modifier.graphicsLayer {
-                    scaleY = contentScaleY
-                    transformOrigin = TransformOrigin(0.5f, 0f)  // 下端基準（アンカーポイントを下）
-                }
-            ) {
-                Text(
-                    stringResource(id = R.string.done), fontSize = 100.sp,
-                    style = MaterialTheme.typography.headlineLarge,
-                    color = Color.White
-                )
-            }
-            Box( modifier = Modifier.graphicsLayer {
-                scaleY = contentScaleY
-                transformOrigin = TransformOrigin(0.5f, 0f)  // 下端基準（アンカーポイントを下）
-            }) {
-                Button(
-                    onClick = {
-                        isResetting = true
-                    },
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = Color(0xFFFFD700),  // 背景色
-                        contentColor = Color.Blue       // 文字色
-                    ),
-                    shape = RoundedCornerShape(0.dp),
-                    modifier = Modifier.width(300.dp)
+            Box(modifier = Modifier.offset(y = offsetYUp)) {
+                Box(
+                    modifier = Modifier.graphicsLayer {
+                        scaleY = contentScaleY
+                        transformOrigin = TransformOrigin(0.5f, 0f)  // 下端基準（アンカーポイントを下）
+                    }
                 ) {
                     Text(
-                        stringResource(id = R.string.reset),
-                        fontSize = 20.sp
+                        stringResource(id = R.string.done), fontSize = 100.sp,
+                        style = MaterialTheme.typography.headlineLarge,
+                        color = Color.White
                     )
+                }
+            }
+            Box(modifier = Modifier.offset(y = offsetYDown)) {
+                Box(modifier = Modifier.graphicsLayer {
+                    scaleY = contentScaleY
+                    transformOrigin = TransformOrigin(0.5f, 0f)  // 下端基準（アンカーポイントを下）
+                }) {
+
+                    Button(
+                        onClick = {
+                            isResetting = true
+                        },
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = Color(0xFFFFD700),  // 背景色
+                            contentColor = Color.Blue       // 文字色
+                        ),
+                        shape = RoundedCornerShape(0.dp),
+                        modifier = Modifier.width(300.dp)
+                    ) {
+                        Text(
+                            stringResource(id = R.string.reset),
+                            fontSize = 20.sp
+                        )
+                    }
                 }
             }
             LaunchedEffect(isResetting) {
