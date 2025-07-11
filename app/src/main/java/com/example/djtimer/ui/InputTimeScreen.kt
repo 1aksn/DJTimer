@@ -254,15 +254,21 @@ fun InputTimeScreen(navController: NavController) {
                                         modifier = Modifier.width(100.dp)
                                             .border(2.dp, Color(0xFFFF1493), RoundedCornerShape(10.dp))
                                     ) {
-                                        Text("OK")
+                                        Text(text = "OK",
+                                            fontSize = 20.sp)
                                     }
                                 },
-                                title = { Text("ERROR") },
-                                text = { Text(dialogMessage) },
+                                title = { Text(
+                                    text = "ERROR",
+                                    fontSize = 30.sp
+                                    ) },
+                                text = { Text(
+                                    text = dialogMessage,
+                                    fontSize = 15.sp) },
                                 containerColor = Color(0xFFFFD700),
                                 shape = RoundedCornerShape(5.dp),
                                 tonalElevation = 0.dp,
-                                modifier = Modifier.border(4.dp, Color(0xFFFF1493), RoundedCornerShape(5.dp)).width(350.dp) // 赤い枠線
+                                modifier = Modifier.border(6.dp, Color(0xFFFF1493), RoundedCornerShape(5.dp)).width(350.dp) // 赤い枠線
                             )
                         }
                     }
