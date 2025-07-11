@@ -109,6 +109,7 @@ fun TimerCountScreen(navController: NavController, backStackEntry: NavBackStackE
 
     LaunchedEffect(timerState) {
         if (timerState == TimerState.Done) {
+            viewModel.setCurrentScreen("done")
             navController.navigate("done") {
                 popUpTo("timer") { inclusive = true }
             }
@@ -275,6 +276,7 @@ fun TimerCountScreen(navController: NavController, backStackEntry: NavBackStackE
                                 while (true) {
                                     if (animatedHeightFraction == 0f && contentScaleY == 0f) {
                                         viewModel.reset()
+                                        viewModel.setCurrentScreen("input")
                                         navController.popBackStack("input", false)
                                         break
                                     }

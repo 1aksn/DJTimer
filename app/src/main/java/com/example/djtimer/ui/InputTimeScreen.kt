@@ -222,6 +222,7 @@ fun InputTimeScreen(navController: NavController) {
                                     setShowDialog(true)
                                 } else {
                                     viewModel.startTimer()
+                                    viewModel.setCurrentScreen("timer")
                                     navController.navigate("timer") {
                                     }
                                 }

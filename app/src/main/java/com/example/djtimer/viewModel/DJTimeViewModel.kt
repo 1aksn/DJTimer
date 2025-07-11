@@ -48,6 +48,15 @@ class DJTimerViewModel @Inject constructor() : ViewModel() {
 
     private var _initialDurationSeconds: Int? = null
 
+
+    // 画面の遷移情報を保存
+    // 画面の状態が変わった時にsetContentが走ってしまうので復元できるよう
+    val currentScreen = MutableStateFlow("input")  // 初期画面
+
+    fun setCurrentScreen(screen: String) {
+        currentScreen.value = screen
+    }
+
     val remainingDurationSeconds: Int
         get() = endTimeReference?.let {
             val now = LocalDateTime.now()

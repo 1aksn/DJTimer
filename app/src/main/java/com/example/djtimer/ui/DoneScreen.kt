@@ -130,6 +130,7 @@ fun DoneScreen(navController: NavController, backStackEntry: NavBackStackEntry) 
                         if (animatedHeightFraction == 1f && contentScaleY == 0f) {
 
                             viewModel.reset()
+                            viewModel.setCurrentScreen("input")
                             navController.popBackStack("input", false)
                             break
                         }
