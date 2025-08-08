@@ -171,6 +171,7 @@ class DJTimerViewModel @Inject constructor( @ApplicationContext private val cont
         endTimeReference = null
         totalTimeText.value = ""
         _initialDurationSeconds = null
+        currentScreen.value = "input"
     }
 
     fun startTimer() {
