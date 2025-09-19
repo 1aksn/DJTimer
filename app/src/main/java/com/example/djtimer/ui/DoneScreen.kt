@@ -34,6 +34,8 @@ import androidx.compose.ui.graphics.TransformOrigin
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.testTag
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -48,7 +50,7 @@ import kotlinx.coroutines.delay
 
 @RequiresApi(Build.VERSION_CODES.S)
 @Composable
-fun DoneScreen(navController: NavController, backStackEntry: NavBackStackEntry) {
+fun DoneScreen(navController: NavController, backStackEntry: NavBackStackEntry, displayMode: DisplayModes = rememberDisplayMode()) {
     BackHandler(enabled = true) {
         // 何もしない → 戻れなくする
     }
@@ -132,7 +134,8 @@ fun DoneScreen(navController: NavController, backStackEntry: NavBackStackEntry) 
                     Text(
                         stringResource(id = R.string.done), fontSize = 100.sp,
                         style = MaterialTheme.typography.headlineLarge,
-                        color = Color.White
+                        color = Color.White,
+                        modifier = Modifier.semantics { testTag = "doneTop" }
                     )
                 }
             }
@@ -151,7 +154,9 @@ fun DoneScreen(navController: NavController, backStackEntry: NavBackStackEntry) 
                             contentColor = Color.Blue       // 文字色
                         ),
                         shape = RoundedCornerShape(0.dp),
-                        modifier = Modifier.width(300.dp)
+                        modifier = Modifier
+                            .width(300.dp)
+                            .semantics { testTag = "doneBottom" }
                     ) {
                         Text(
                             stringResource(id = R.string.reset),

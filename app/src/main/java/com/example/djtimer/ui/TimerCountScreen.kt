@@ -44,17 +44,21 @@ import androidx.compose.ui.graphics.TransformOrigin
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.testTag
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavBackStackEntry
 import com.example.djtimer.HideSystemBars
 import com.example.djtimer.R
 import com.example.djtimer.util.NotificationHelper
 import kotlin.math.tan
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.testTag
 
 
 @RequiresApi(Build.VERSION_CODES.S)
 @Composable
-fun TimerCountScreen(navController: NavController, backStackEntry: NavBackStackEntry) {
+fun TimerCountScreen(navController: NavController, backStackEntry: NavBackStackEntry? = null, displayMode: DisplayModes = rememberDisplayMode()) {
 
     // バックボタン無効化
     BackHandler(enabled = true) {
@@ -73,7 +77,6 @@ fun TimerCountScreen(navController: NavController, backStackEntry: NavBackStackE
     }
     val timerState by viewModel.timerState.collectAsState()
     val timeDisplay by viewModel.timeRemainingText.collectAsState()
-    val displayMode = rememberDisplayMode()
 
     var isResetting by remember { mutableStateOf(false) }
 
@@ -202,7 +205,8 @@ fun TimerCountScreen(navController: NavController, backStackEntry: NavBackStackE
                                 text = timeDisplay,
                                 style = MaterialTheme.typography.headlineLarge,
                                 color = Color.White,
-                                fontSize = 70.sp
+                                fontSize = 70.sp,
+                                modifier = Modifier.semantics { testTag = "timerText" }
                             )
                         }
                     }
@@ -214,7 +218,9 @@ fun TimerCountScreen(navController: NavController, backStackEntry: NavBackStackE
                     Column(
                         verticalArrangement = Arrangement.Center,
                         horizontalAlignment = Alignment.CenterHorizontally,
-                        modifier = Modifier.align(Alignment.Center)
+                        modifier = Modifier
+                            .align(Alignment.Center)
+                            .semantics { testTag = "controlPanel" }
                     ) {
                         Box(
                             modifier = Modifier
@@ -236,6 +242,7 @@ fun TimerCountScreen(navController: NavController, backStackEntry: NavBackStackE
                                 modifier = Modifier
                                     .width(300.dp)
                                     .height(90.dp)
+                                    .semantics { testTag = "toggleButton" }
                             ) {
                                 Text(
                                     if (isRunning) stringResource(id = R.string.stop) else stringResource(
@@ -263,7 +270,9 @@ fun TimerCountScreen(navController: NavController, backStackEntry: NavBackStackE
                                     contentColor = Color.Blue       // 文字色
                                 ),
                                 shape = RoundedCornerShape(0.dp),
-                                modifier = Modifier.width(300.dp)
+                                modifier = Modifier
+                                    .width(300.dp)
+                                    .semantics { testTag = "resetButton" }
 
                             ) {
                                 Text(

@@ -18,6 +18,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.semantics.disabled
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.testTag
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import java.time.LocalTime
@@ -27,7 +30,8 @@ fun TimePickerRow(
     label: String,
     time: LocalTime?,
     enabled: Boolean,
-    onTimeSelected: (LocalTime) -> Unit
+    onTimeSelected: (LocalTime) -> Unit,
+    testTag: String? = null
 ) {
     val context = LocalContext.current
     val timeStr = time?.let { "%02d:%02d".format(it.hour, it.minute) } ?: "--:--"
@@ -64,6 +68,9 @@ fun TimePickerRow(
             modifier = Modifier
                 .width(300.dp)   // 横幅を広げる
                 .height(60.dp)
+                .semantics {
+                    if (testTag != null) this.testTag = testTag
+                }
         ) {
             Text(timeStr,
                 fontSize = 35.sp)

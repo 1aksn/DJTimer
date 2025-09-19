@@ -20,6 +20,7 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+//        testInstrumentationRunner = "com.google.dagger.hilt.android.testing.HiltTestRunner"
     }
 
     buildFeatures {
@@ -89,4 +90,17 @@ dependencies {
     testImplementation("androidx.arch.core:core-testing:2.2.0")
     testImplementation("io.mockk:mockk:1.13.5")
     testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.7.3")
+
+    androidTestImplementation ("androidx.compose.ui:ui-test-junit4:1.6.7")
+    debugImplementation ("androidx.compose.ui:ui-test-manifest:1.6.7")
+
+    androidTestImplementation ("androidx.test:core-ktx:1.6.1")
+    androidTestImplementation ("androidx.test.ext:junit:1.2.1")
+    androidTestImplementation ("androidx.navigation:navigation-testing:2.8.2")
+
+    androidTestImplementation ("com.google.dagger:hilt-android-testing:2.52")
+    kaptAndroidTest ("com.google.dagger:hilt-compiler:2.52")
+
+    androidTestImplementation ("androidx.test.espresso:espresso-core:3.6.1")
+    androidTestImplementation ("androidx.test.espresso:espresso-contrib:3.6.1")
 }

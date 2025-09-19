@@ -59,6 +59,8 @@ import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.testTag
 import androidx.compose.ui.text.TextStyle
 import com.example.djtimer.HideSystemBars
 import com.example.djtimer.R
@@ -66,7 +68,8 @@ import com.example.djtimer.R
 @RequiresApi(Build.VERSION_CODES.S)
 @OptIn(ExperimentalAnimationApi::class, ExperimentalMaterial3Api::class)
 @Composable
-fun InputTimeScreen(navController: NavController) {
+fun InputTimeScreen(navController: NavController,
+                    displayMode: DisplayModes = rememberDisplayMode()) {
     HideSystemBars()
     val viewModel: DJTimerViewModel = hiltViewModel()
 
@@ -100,7 +103,8 @@ fun InputTimeScreen(navController: NavController) {
             Box(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(top = parentHeight / 4), // 上半分の中央に
+                    .padding(top = parentHeight / 4) // 上半分の中央に
+                    .semantics { testTag = "currentTimeHeader" },
                 contentAlignment = Alignment.TopCenter
             ) {
                 Text(
@@ -114,7 +118,8 @@ fun InputTimeScreen(navController: NavController) {
         Column(
             modifier = Modifier
                 .align(Alignment.Center)
-                .offset(y = offsetY),
+                .offset(y = offsetY)
+                .semantics { testTag = "inputBlock" },
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
@@ -129,16 +134,20 @@ fun InputTimeScreen(navController: NavController) {
                 TimePickerRow(
                     label = stringResource(id = R.string.start_time),
                     time = startTime,
-                    enabled = inputMode != InputMode.PlayTime
-                ) { viewModel.updateStartTime(it) }
+                    enabled = inputMode != InputMode.PlayTime,
+                    onTimeSelected = { viewModel.updateStartTime(it) },
+                    testTag = "startButton"
+                )
 
                 Spacer(modifier = Modifier.height(8.dp))
 
                 TimePickerRow(
                     label = stringResource(id = R.string.end_time),
                     time = endTime,
-                    enabled = inputMode != InputMode.PlayTime
-                ) { viewModel.updateEndTime(it) }
+                    enabled = inputMode != InputMode.PlayTime,
+                    onTimeSelected = { viewModel.updateEndTime(it) },
+                    testTag = "endButton"
+                )
             }
 
             Spacer(modifier = Modifier.height(32.dp))
@@ -163,7 +172,8 @@ fun InputTimeScreen(navController: NavController) {
                 ),
                 modifier = Modifier
                     .width(300.dp)   // 横幅を広げる
-                    .height(60.dp)  ,
+                    .height(60.dp)
+                    .semantics { testTag = "playTimeField" },
                 colors = TextFieldDefaults.outlinedTextFieldColors(
                     focusedLabelColor = Color(0xFFFFD700),
                     unfocusedLabelColor = Color(0xFFFFD700),
