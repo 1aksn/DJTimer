@@ -1,0 +1,33 @@
+name: Android PR tests
+
+on:
+  pull_request:
+    branches:
+      - main  # 必要に応じてブランチ名を変更
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: 17
+
+      - name: Set up Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Run unit tests
+        run: ./gradlew test
+
+      - name: Start emulator and run instrumentation tests
+        uses: ReactiveCircus/android-emulator-runner@v2
+        with:
+          api-level: 30
+          target: google_apis
+          arch: x86_64
+          script: ./gradlew connectedAndroidTest
